@@ -12,6 +12,7 @@ npm install
 npx expo start - to run the application
 
 For running on expo go - scan the qr code generated in the terminal to open it on the app
+
 For running on browser - click w while in the terminal
 
 # Tech Stack
