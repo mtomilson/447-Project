@@ -22,14 +22,18 @@ app.listen(PORT, () => {
   console.log("server running on ", PORT);
 });
 
-app.get("/api/users", async (req, res) => {
-  const {data, error} = await supabase.from("user").select("*")
-  if (error) {
-    res.status(500).json({error: error.message})
-  } else {
-    res.json(data)
-  }
-}); 
+/**
+ * test query to verify supabase was connected to express server, can be removed later. 
+ */
+
+// app.get("/api/users", async (req, res) => {
+//   const {data, error} = await supabase.from("user").select("*")
+//   if (error) {
+//     res.status(500).json({error: error.message})
+//   } else {
+//     res.json(data)
+//   }
+// }); 
 
 
 export default app;
