@@ -13,7 +13,8 @@
 - Clone repository
 - npm install
 - copy .env files 
-- npm run dev 
+- npm run dev // starts the website (frontend)
+- npm run server // starts the express server
 
 ## Code pipeline 
 * Everytime a change is made to the codebase, create a new branch before committing the change. Branch should be named after the Jira ticket, for example "git branch Scrum-114"
