@@ -1,7 +1,24 @@
+/**
+ * Server file, defines all routes to connect the frontend to the database
+ */
+
 import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
 import { createClient } from "@supabase/supabase-js";
+
+declare module "express" {
+  interface Request {
+    user?: {
+      user_id: string;
+      name: string;
+      email: string;
+      role: string;
+      created_at: string;
+      is_active: boolean;
+    };
+  }
+}
 
 dotenv.config();
 
@@ -76,6 +93,11 @@ async function authenticate(
   if (error) {
     return res.status(401).json({ error: "Invalid token" });
   }
+  const user_id = data.user.id;
+
+  const userData = await getUserProfile(user_id);
+
+  req.user = userData[0];
 
   next(); // token is valid, continue to the route handler
 }
@@ -125,13 +147,15 @@ app.get("/api/requests", authenticate, async (req, res) => {
   }
 });
 
-
+/**
+ * Authenticated route, will update a request with a given status that is passed in the params 
+ */
 
 app.patch("/api/requests/:id", authenticate, async (req, res) => {
   const { newStatus } = req.body;
   const requestId = req.params.id;
   const { data, error } = await dbClient
-    .from("requests") 
+    .from("requests")
     .update({ status: newStatus }) // status is the column name, newStatus is the new value to give it
     .eq("request_id", requestId);
 
@@ -141,5 +165,21 @@ app.patch("/api/requests/:id", authenticate, async (req, res) => {
 
   return res.json({ data });
 });
+
+/**
+ * Authenticated Route, will return all locations and the items and quantities associated to each location
+ */
+
+app.get("/api/locations", authenticate, async (req, res) => {
+  const { data, error } = await dbClient.from("location").select(`*, location_item(*, material_item(*))`);
+
+  if (error) {
+    res.status(500).json({ error: error.message });
+  }
+
+  return res.json({ data });
+});
+
+
 
 export default app;
