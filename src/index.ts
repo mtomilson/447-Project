@@ -5,14 +5,15 @@ import { createClient } from "@supabase/supabase-js";
 
 dotenv.config();
 
-const authClient = createClient( // for some reason need both auth client and db client, otherwise it queries the database with the auth token
+const authClient = createClient(
+  // for some reason need both auth client and db client, otherwise it queries the database with the auth token
   process.env.VITE_SUPABASE_URL!,
-  process.env.VITE_SUPABASE_SERVICE_ROLE_KEY!
+  process.env.VITE_SUPABASE_SERVICE_ROLE_KEY!,
 );
 
 const dbClient = createClient(
   process.env.VITE_SUPABASE_URL!,
-  process.env.VITE_SUPABASE_SERVICE_ROLE_KEY!
+  process.env.VITE_SUPABASE_SERVICE_ROLE_KEY!,
 );
 
 const app = express();
@@ -32,7 +33,8 @@ app.listen(PORT, () => {
   console.log("server running on ", PORT);
 });
 
-async function authenticateUser(email: string, password: string) { // first authenticate the user 
+async function authenticateUser(email: string, password: string) {
+  // first authenticate the user
   const { data, error } = await authClient.auth.signInWithPassword({
     email,
     password,
@@ -41,8 +43,9 @@ async function authenticateUser(email: string, password: string) { // first auth
   return data;
 }
 
-async function getUserProfile(userId: string) { // queries the profile table looking for user_id that matches the authenticated user 
-  console.log(userId)
+async function getUserProfile(userId: string) {
+  // queries the profile table looking for user_id that matches the authenticated user
+  console.log(userId);
   const { data, error } = await dbClient
     .from("profiles")
     .select("*")
@@ -50,6 +53,38 @@ async function getUserProfile(userId: string) { // queries the profile table loo
   if (error) throw error;
   return data;
 }
+
+/**
+ * Authenticate function is a middleware function, it authenticates any user trying to make a request,
+ * It is attached to any route as an argument and when a route is called that has it, it runs authenticate first
+ * then if it's a valid token, it proceeds to the next function.
+ */
+
+async function authenticate(
+  req: express.Request,
+  res: express.Response,
+  next: express.NextFunction,
+) {
+  const token = req.headers.authorization?.split(" ")[1]; // gets rid of "bearer" tag on authorization
+
+  if (!token) {
+    return res.status(401).json({ error: "No token provided" });
+  }
+
+  const { data, error } = await authClient.auth.getUser(token); // determines if token is valid
+
+  if (error) {
+    return res.status(401).json({ error: "Invalid token" });
+  }
+
+  next(); // token is valid, continue to the route handler
+}
+
+/**
+ * login route
+ * params: email: string, password: string
+ * returns: user: JSON Object, token: string
+ */
 
 app.post("/api/login", async (req, res) => {
   try {
@@ -59,12 +94,52 @@ app.post("/api/login", async (req, res) => {
 
     return res.json({
       user: profile,
-      token: authData.session?.access_token, // session token, can be used for subsequent authenticated requests 
+      token: authData.session?.access_token, // session token, can be used for subsequent authenticated requests
     });
-  } catch (err: any) {
-    return res.status(500).json({ error: err.message });
+  } catch (error: any) {
+    return res.status(500).json({ error: error.message });
   }
 });
 
+// ANY CRUD operations should have authenticate in the header to prevent any non authenticated users from accessing database
+
+/**
+ * Authenticated route, will return all requests with all items attached to request and the quantity.
+ */
+app.get("/api/requests", authenticate, async (req, res) => {
+  try {
+    const { data, error } = await dbClient
+      .from("requests")
+      .select(`*, request_item(*, material_item(*))`);
+
+    if (error) {
+      throw error;
+    }
+
+    return res.json({
+      data: data,
+    });
+  } catch (error: any) {
+    console.log("error: ", error.message);
+    return res.status(500).json({ error: error.message });
+  }
+});
+
+
+
+app.patch("/api/requests/:id", authenticate, async (req, res) => {
+  const { newStatus } = req.body;
+  const requestId = req.params.id;
+  const { data, error } = await dbClient
+    .from("requests")
+    .update({ status: newStatus })
+    .eq("request_id", requestId);
+
+  if (error) {
+    res.status(500).json({ error: error.message });
+  }
+
+  return res.json({ data });
+});
 
 export default app;
