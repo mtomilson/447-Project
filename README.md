@@ -33,3 +33,83 @@
 ## Important Commands
 - If at any point the database structure is changed in any way, rerun the following command. This will update the supabase.ts file to update the types.
 - npx supabase gen types typescript --project-id athaftfgyhpyzqlqtzhe > src/types/supabase.ts
+
+---
+
+# Workflow
+
+---
+
+## 1. Project Setup
+| Task |
+|------| 
+| Create Vite + React + TypeScript project |
+| TailwindCSS, Supabase, Express.js installed |
+
+---
+
+## 2. Authentication
+
+| Task |
+|------| 
+| Login Page UI |
+| Login API route on backend |
+| Login Error Message Display |
+| Redirect after login based on user role |
+| Logout button |
+
+---
+
+## 3. Navigation
+| Task |
+|------|
+| Navigation bar |
+| Role-based navigation |
+| Profile page |
+
+---
+
+## 4. Page: Jobsite Logistics Role
+| Task | 
+|------|
+| Submit new material request form |
+| View my requests list |
+| Confirm delivery (mark as delivered) |
+| View inventory for in their location |
+
+---
+
+## 5. Pages: Warehouse Logistics Role
+| Task |
+|------|
+| Log a delivery (upload packing slip photo) |
+| Mark request as shipped |
+| View shipments |
+| View inventory for warehouse |
+
+---
+
+## 6. Pages: Project Manager Role
+| Task |
+|------|
+| Approve or deny material requests |
+| View all inventory across locations |
+| View audit log |
+| Create new job site |
+| Manage job sites (edit/archive) |
+| View reports |
+| Create and view pay orders |
+
+---
+
+## 7. Pages: System Administrator Role
+| Task | 
+|------|
+| View all users | 
+| Create new user | 
+| Edit / deactivate existing user | 
+| View all locations |
+| Update location details |
+| View inventory |
+| View audit log |
+| Manage inventory | 
