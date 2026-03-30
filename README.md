@@ -31,3 +31,6 @@
    - test: description (used when adding test cases)
 * Add images/screenshots of what you added and changed and explain what you did and why.
 
+## Important Commands
+- If at any point the database structure is changed in any way, rerun the following command. This will update the supabase.ts file to update the types.
+- npx supabase gen types typescript --project-id athaftfgyhpyzqlqtzhe > src/types/supabase.ts
