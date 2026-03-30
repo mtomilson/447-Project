@@ -131,8 +131,8 @@ app.patch("/api/requests/:id", authenticate, async (req, res) => {
   const { newStatus } = req.body;
   const requestId = req.params.id;
   const { data, error } = await dbClient
-    .from("requests")
-    .update({ status: newStatus })
+    .from("requests") 
+    .update({ status: newStatus }) // status is the column name, newStatus is the new value to give it
     .eq("request_id", requestId);
 
   if (error) {
