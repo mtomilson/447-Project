@@ -7,14 +7,15 @@ type AuthContextType = {
   logout: () => void;
 };
 
-const AuthContext = createContext<AuthContextType | null>(null);
+const AuthContext = createContext<AuthContextType | null>(null); //auth context allows all children to use the data from this file
+                                                                 // important for authentication purposes
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState<string | null>(null);
 
   async function login(email: string, password: string) {
-    const res = await fetch("http://localhost:3000/api/login", {
+    const res = await fetch("http://localhost:3000/api/login", { // calls api and returns token and user data
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),

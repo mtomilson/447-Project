@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 
 export default function Login() {
+    
   const { login } = useAuth();
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
