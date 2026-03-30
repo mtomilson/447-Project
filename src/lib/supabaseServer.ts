@@ -1,9 +1,9 @@
 import { createClient } from "@supabase/supabase-js";
 import dotenv from "dotenv";
+import type { Database } from "../types/supabase";
 
 dotenv.config();
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
 
-const supabaseUrl = process.env.VITE_SUPABASE_URL!;
-const supabaseServiceKey = process.env.VITE_SUPABASE_SERVICE_ROLE_KEY!; // required for data retrieval, bypasses RLS
-
-export const supabase = createClient(supabaseUrl, supabaseServiceKey);
+export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey);
