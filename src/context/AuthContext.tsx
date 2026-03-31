@@ -11,7 +11,10 @@ const AuthContext = createContext<AuthContextType | null>(null); //auth context 
                                                                  // important for authentication purposes
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(() => {
+    const stored = localStorage.getItem("user"); // stores user in the browser's local storage
+    return stored ? JSON.parse(stored) : null;   // if user exists parse it, if not return null ( no user )
+  });
   const [token, setToken] = useState<string | null>(null);
 
   async function login(email: string, password: string) {
@@ -26,6 +29,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } else {
       setUser(data.user);
       setToken(data.token);
+      localStorage.setItem("token", data.token); // create an object in local storage with the value of token
+      localStorage.setItem("user", JSON.stringify(data.user));
       return data.user;
     }
   }
@@ -33,6 +38,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   function logout() {
     setUser(null);
     setToken(null);
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
   }
 
   return (
