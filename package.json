@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "concurrently \"vite\" \"tsx watch src/server/index.ts\"",
-    "server": "tsx watch src/index.ts",
+    "server": "tsx watch src/server/index.ts",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview"
