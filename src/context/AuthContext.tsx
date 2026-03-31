@@ -15,7 +15,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [token, setToken] = useState<string | null>(null);
 
   async function login(email: string, password: string) {
-    const res = await fetch("http://localhost:3000/api/login", { // calls api and returns token and user data
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/api/login`, { // calls api and returns token and user data
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),
