@@ -3,7 +3,7 @@ import { createContext, useContext, useState } from "react";
 type AuthContextType = {
   user: any | null; // profile data from your profiles table
   token: string | null;
-  login: (email: string, password: string) => Promise<void>;
+  login: (email: string, password: string) => Promise<any>;
   logout: () => void;
 };
 
@@ -22,12 +22,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     });
     const data = await res.json();
     if (!res.ok) {
-      console.log("error: ", data.error);
+      throw new Error(data.error)
     } else {
-      console.log(data.user);
-      console.log(data.token);
       setUser(data.user);
       setToken(data.token);
+      return data.user;
     }
   }
 
