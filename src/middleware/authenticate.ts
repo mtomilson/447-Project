@@ -1,6 +1,6 @@
 import express from "express"
 import { authClient } from "../lib/supabaseServer"
-import { getUserProfile } from "../lib/helper";
+import { getUserProfile } from "../lib/helper/helper";
 
 export async function authenticate(
   req: express.Request,

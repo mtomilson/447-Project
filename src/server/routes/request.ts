@@ -19,7 +19,6 @@ router.get("/", async (req, res) => {
       data: data,
     });
   } catch (error: any) {
-    console.log("error: ", error.message);
     return res.status(500).json({ error: error.message });
   }
 });

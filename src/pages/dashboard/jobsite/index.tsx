@@ -1,6 +1,6 @@
 import React from 'react'
 
-export function Dashboard() {
+export function JobsiteDashboard() {
   return (
     <div>
       Logged in as Jobsite Logistics!
