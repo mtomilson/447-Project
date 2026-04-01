@@ -7,7 +7,8 @@
 ## Helpful VS Code extensions
 - TailwindCSS Intellisense
 - ES7 React 
-- Prettier 
+- Prettier
+- Thunderbolt
 
 ## How to Run
 - Clone repository
