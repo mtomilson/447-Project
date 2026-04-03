@@ -22,7 +22,7 @@ function App() {
           <Route path="/" element={<Login />} />
           <Route element={<ProtectedRoute role="jobsite_logistic" />}>
             <Route path="/dashboard/jobsite" element={<JobsiteDashboard />} />
-            <Route path="/dashboard/jobsite/requests" element={<RequestsPage />} />
+            <Route path="/requests" element={<RequestsPage />} />
           </Route>
 
           <Route element={<ProtectedRoute role="warehouse_logistic" />}>
