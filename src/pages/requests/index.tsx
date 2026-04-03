@@ -50,7 +50,7 @@ export default function RequestsPage() {
   const [formSuccess, setFormSuccess] = useState(false);
 
   async function fetchRequests() {
-    const res = await fetch(`${import.meta.env.VITE_API_URL}/api/requests`, {
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/api/request`, {
       headers: { Authorization: `Bearer ${token}` },
     });
     const data = await res.json();
@@ -77,7 +77,7 @@ export default function RequestsPage() {
     fetchData();
   }, [token]);
 
-  async function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.SubmitEvent) {
     e.preventDefault();
     setFormError("");
     setFormLoading(true);
@@ -178,7 +178,7 @@ export default function RequestsPage() {
 
       {/* New Request Modal */}
       {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 px-4">
+        <div className="fixed inset-0 bg-black/40 bg-opacity-50 flex items-center justify-center z-50 px-4">
           <div className="bg-white rounded-lg shadow-lg w-full max-w-sm p-8">
             {formSuccess ? (
               <div className="text-center">

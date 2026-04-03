@@ -11,6 +11,7 @@ const navConfig: Record<string, NavItem[]> = {
   jobsite_logistic: [
     { label: "Dashboard", path: "/dashboard/jobsite" },
     { label: "Inventory", path: "/inventory" },
+    { label: "Requests", path: "/dashboard/jobsite/requests"}
   ],
   warehouse_logistic: [
     { label: "Dashboard", path: "/dashboard/warehouse" },
