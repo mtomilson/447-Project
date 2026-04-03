@@ -7,31 +7,39 @@ import { JobsiteDashboard } from "./pages/dashboard/jobsite/index";
 import { WarehouseDashboard } from "./pages/dashboard/warehouse/index";
 import { ManagerDashboard } from "./pages/dashboard/manager/index";
 import { AdminDashboard } from "./pages/dashboard/admin/index";
-
+import { Inventory } from "./pages/inventory/index";
+import { Layout } from "./components/Layout";
+import { Toaster } from "react-hot-toast"
 function App() {
-  // If adding more routes follow login format <Route path="/pathname" element={<page component/>}/>
-  // all components inside authprovider component will have access to user data and session token
   return (
     <AuthProvider>
       <BrowserRouter>
+      <Toaster position="top-center"/>
+        <Layout />
         <Routes>
           <Route path="/" element={<Login />} />
           <Route element={<ProtectedRoute role="jobsite_logistic" />}>
             <Route path="/dashboard/jobsite" element={<JobsiteDashboard />} />
           </Route>
-          
+
           <Route element={<ProtectedRoute role="warehouse_logistic" />}>
-            <Route path="/dashboard/warehouse" element={<WarehouseDashboard />} />
+            <Route
+              path="/dashboard/warehouse"
+              element={<WarehouseDashboard />}
+            />
           </Route>
-          
+
           <Route element={<ProtectedRoute role="project_manager" />}>
             <Route path="/dashboard/manager" element={<ManagerDashboard />} />
           </Route>
-          
+
           <Route element={<ProtectedRoute role="system_administrator" />}>
             <Route path="/dashboard/admin" element={<AdminDashboard />} />
           </Route>
-          
+
+          <Route element={<ProtectedRoute />}>
+            <Route path="/inventory" element={<Inventory />} />
+          </Route>
         </Routes>
       </BrowserRouter>
     </AuthProvider>
