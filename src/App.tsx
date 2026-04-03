@@ -7,10 +7,9 @@ import { JobsiteDashboard } from "./pages/dashboard/jobsite/index";
 import { WarehouseDashboard } from "./pages/dashboard/warehouse/index";
 import { ManagerDashboard } from "./pages/dashboard/manager/index";
 import { AdminDashboard } from "./pages/dashboard/admin/index";
+import RequestsPage from "./pages/requests";
 
 function App() {
-  // If adding more routes follow login format <Route path="/pathname" element={<page component/>}/>
-  // all components inside authprovider component will have access to user data and session token
   return (
     <AuthProvider>
       <BrowserRouter>
@@ -18,6 +17,7 @@ function App() {
           <Route path="/" element={<Login />} />
           <Route element={<ProtectedRoute role="jobsite_logistic" />}>
             <Route path="/dashboard/jobsite" element={<JobsiteDashboard />} />
+            <Route path="/dashboard/jobsite/requests" element={<RequestsPage />} />
           </Route>
           
           <Route element={<ProtectedRoute role="warehouse_logistic" />}>
