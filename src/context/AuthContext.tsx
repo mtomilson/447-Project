@@ -3,7 +3,7 @@ import { createContext, useContext, useState } from "react";
 type AuthContextType = {
   user: any | null; // profile data from your profiles table
   token: string | null;
-  login: (email: string, password: string) => Promise<void>;
+  login: (email: string, password: string) => Promise<any>;
   logout: () => void;
 };
 
@@ -11,7 +11,10 @@ const AuthContext = createContext<AuthContextType | null>(null); //auth context 
                                                                  // important for authentication purposes
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(() => {
+    const stored = localStorage.getItem("user"); // stores user in the browser's local storage
+    return stored ? JSON.parse(stored) : null;   // if user exists parse it, if not return null ( no user )
+  });
   const [token, setToken] = useState<string | null>(null);
 
   async function login(email: string, password: string) {
@@ -22,18 +25,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     });
     const data = await res.json();
     if (!res.ok) {
-      console.log("error: ", data.error);
+      throw new Error(data.error)
     } else {
-      console.log(data.user);
-      console.log(data.token);
       setUser(data.user);
       setToken(data.token);
+      localStorage.setItem("token", data.token); // create an object in local storage with the value of token
+      localStorage.setItem("user", JSON.stringify(data.user));
+      return data.user;
     }
   }
 
   function logout() {
     setUser(null);
     setToken(null);
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
   }
 
   return (

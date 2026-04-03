@@ -1,13 +1,21 @@
 import React, { useState } from "react";
 import { useAuth } from "../../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 export default function Login() {
-    
   const { login } = useAuth();
+  const navigate = useNavigate();
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [error, setError] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
+
+  const roleRoutes: Record<string, string> = {
+    jobsite_logistic: "/dashboard/jobsite",
+    warehouse_logistic: "/dashboard/warehouse",
+    project_manager: "/dashboard/manager",
+    system_administrator: "/dashboard/admin"
+  }
 
   async function handleSubmit(e: React.SubmitEvent) {
     e.preventDefault();
@@ -15,7 +23,8 @@ export default function Login() {
     setLoading(true);
 
     try {
-      await login(email, password);
+      const loggedInUser = await login(email, password);
+      navigate(roleRoutes[loggedInUser[0].role] ?? "/")
     } catch (error: any) {
       setError(error.message || "Login Failed");
     } finally {

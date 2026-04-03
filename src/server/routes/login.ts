@@ -1,5 +1,5 @@
 import { Router } from "express";
-import {authenticateUser, getUserProfile} from "../../lib/helper"
+import {authenticateUser, getUserProfile} from "../../lib/helper/helper"
 
 const router = Router();
 
