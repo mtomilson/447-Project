@@ -27,7 +27,7 @@ app.use(express.json());
 
 app.use("/api/login", loginRouter);
 app.use("/api/request", authenticate, requestRouter);
-app.use("/api/location", locationRouter);
+app.use("/api/location", authenticate, locationRouter);
 
 
 const PORT = process.env.PORT;
