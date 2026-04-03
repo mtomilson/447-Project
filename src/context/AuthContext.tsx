@@ -15,7 +15,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const stored = localStorage.getItem("user"); // stores user in the browser's local storage
     return stored ? JSON.parse(stored) : null;   // if user exists parse it, if not return null ( no user )
   });
-  const [token, setToken] = useState<string | null>(null);
+  const [token, setToken] = useState<string | null>(() => {
+    const stored = localStorage.getItem("token");
+    return stored ? stored : null;
+  });
 
   async function login(email: string, password: string) {
     const res = await fetch(`${import.meta.env.VITE_API_URL}/api/login`, { // calls api and returns token and user data

@@ -32,8 +32,8 @@ type MaterialItem = {
 };
 
 export default function RequestsPage() {
-  const user = localStorage.getItem("user");
-  const token = localStorage.getItem("token");
+  const { user, token } = useAuth();
+
 
   const [requests, setRequests] = useState<Request[]>([]);
   const [locations, setLocations] = useState<Location[]>([]);
@@ -136,13 +136,12 @@ export default function RequestsPage() {
     <div className="min-h-screen bg-gray-50 p-6">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold" style={{ color: "#013868" }}>
+        <h1 className="text-2xl font-bold text-primary">
           Material Requests
         </h1>
         <button
           onClick={() => setShowModal(true)}
-          className="px-4 py-2 text-white font-semibold rounded-md hover:opacity-90 transition-opacity"
-          style={{ backgroundColor: "#7AC142" }}
+          className="px-4 py-2 text-white font-semibold rounded-md hover:opacity-90 transition-opacity bg-secondary"
         >
           + New Request
         </button>
@@ -156,7 +155,7 @@ export default function RequestsPage() {
       ) : (
         <div className="space-y-4">
           {requests.map((req) => (
-            <div key={req.request_id} className="bg-white rounded-lg shadow p-4 border-l-4" style={{ borderLeftColor: "#013868" }}>
+            <div key={req.request_id} className="bg-white rounded-lg shadow p-4 border-l-4 border-l-primary">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm text-gray-500">
                   {new Date(req.created_at).toLocaleDateString()}
@@ -183,7 +182,7 @@ export default function RequestsPage() {
           <div className="bg-white rounded-lg shadow-lg w-full max-w-sm p-8">
             {formSuccess ? (
               <div className="text-center">
-                <h2 className="text-xl font-bold mb-2" style={{ color: "#013868" }}>
+                <h2 className="text-xl font-bold mb-2 text-primary">
                   Request Submitted!
                 </h2>
                 <p className="text-gray-500 text-sm mb-6">
@@ -191,8 +190,7 @@ export default function RequestsPage() {
                 </p>
                 <button
                   onClick={closeModal}
-                  className="w-full py-3 text-white font-semibold rounded-md hover:opacity-90 transition-opacity"
-                  style={{ backgroundColor: "#7AC142" }}
+                  className="w-full py-3 text-white font-semibold rounded-md hover:opacity-90 transition-opacity bg-secondary"
                 >
                   Done
                 </button>
@@ -200,7 +198,7 @@ export default function RequestsPage() {
             ) : (
               <>
                 <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-xl font-bold" style={{ color: "#013868" }}>
+                  <h2 className="text-xl font-bold text-primary">
                     New Request
                   </h2>
                   <button onClick={closeModal} className="text-gray-400 hover:text-gray-600 text-xl">✕</button>
@@ -214,8 +212,7 @@ export default function RequestsPage() {
                       value={requestedFrom}
                       onChange={(e) => setRequestedFrom(e.target.value)}
                       required
-                      className="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 text-gray-700"
-                      style={{ outlineColor: "#013868" }}
+                      className="w-full px-3 py-3 border outline-primary border-gray-300 rounded-md focus:outline-none focus:ring-2 text-gray-700"
                     >
                       <option value="">Select warehouse</option>
                       {locations.map((loc) => (
@@ -280,8 +277,7 @@ export default function RequestsPage() {
                   <button
                     type="submit"
                     disabled={formLoading}
-                    className="w-full py-3 text-white font-semibold rounded-md hover:opacity-90 transition-opacity disabled:opacity-50"
-                    style={{ backgroundColor: "#7AC142" }}
+                    className="w-full py-3 bg-secondary text-white font-semibold rounded-md hover:opacity-90 transition-opacity disabled:opacity-50"
                   >
                     {formLoading ? "Submitting..." : "Submit Request"}
                   </button>
