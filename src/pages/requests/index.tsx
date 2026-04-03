@@ -32,7 +32,8 @@ type MaterialItem = {
 };
 
 export default function RequestsPage() {
-  const { user, token } = useAuth();
+  const user = localStorage.getItem("user");
+  const token = localStorage.getItem("token");
 
   const [requests, setRequests] = useState<Request[]>([]);
   const [locations, setLocations] = useState<Location[]>([]);
@@ -61,7 +62,7 @@ export default function RequestsPage() {
   useEffect(() => {
     async function fetchData() {
       const [locRes, matRes] = await Promise.all([
-        fetch(`${import.meta.env.VITE_API_URL}/api/locations`, {
+        fetch(`${import.meta.env.VITE_API_URL}/api/location`, {
           headers: { Authorization: `Bearer ${token}` },
         }),
         fetch(`${import.meta.env.VITE_API_URL}/api/materials`, {
