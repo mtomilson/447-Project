@@ -91,12 +91,7 @@ async function createRequest(body: {
 }
 
 export default function RequestsPage() {
-  // const { user, token } = useAuth();F
   const queryClient = useQueryClient();
-  // const [requests, setRequests] = useState<Request[]>([]);
-  // const [locations, setLocations] = useState<Location[]>([]);
-  // const [materials, setMaterials] = useState<MaterialItem[]>([]);
-  // const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
 
   // Form state
