@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
+import { Dropdown } from "../../components/Dropdown";
 
 type RequestItem = {
   item_id: string;
@@ -231,56 +232,37 @@ export default function RequestsPage() {
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     From (Warehouse)
                   </label>
-                  <select
+                  <Dropdown
+                    options={locations?.map((loc) => ({ value: loc.location_id, label: loc.location_name ?? "" })) ?? []}
                     value={requestedFrom}
-                    onChange={(e) => setRequestedFrom(e.target.value)}
+                    onChange={setRequestedFrom}
+                    placeholder="Select warehouse"
                     required
-                    className="w-full px-3 py-3 border outline-primary border-gray-300 rounded-md focus:outline-none focus:ring-2 text-gray-700"
-                  >
-                    <option value="">Select warehouse</option>
-                    {locations?.map((loc) => (
-                      <option key={loc.location_id} value={loc.location_id}>
-                        {loc.location_name}
-                      </option>
-                    ))}
-                  </select>
+                  />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     To (Jobsite)
                   </label>
-                  <select
+                  <Dropdown
+                    options={locations?.map((loc) => ({ value: loc.location_id, label: loc.location_name ?? "" })) ?? []}
                     value={requestedTo}
-                    onChange={(e) => setRequestedTo(e.target.value)}
+                    onChange={setRequestedTo}
+                    placeholder="Select jobsite"
                     required
-                    className="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 text-gray-700"
-                  >
-                    <option value="">Select jobsite</option>
-                    {locations?.map((loc) => (
-                      <option key={loc.location_id} value={loc.location_id}>
-                        {loc.location_name}
-                      </option>
-                    ))}
-                  </select>
+                  />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     Material
                   </label>
-                  <select
+                  <Dropdown
+                    options={materials?.map((mat) => ({ value: mat.item_id, label: `${mat.item_name}${mat.unit ? ` (${mat.unit})` : ""}` })) ?? []}
                     value={itemId}
-                    onChange={(e) => setItemId(e.target.value)}
+                    onChange={setItemId}
+                    placeholder="Select material"
                     required
-                    size={4}
-                    className="w-full max-h-40 overflow-y-auto px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 text-gray-700"
-                  >
-                    <option value="">Select material</option>
-                    {materials?.map((mat) => (
-                      <option key={mat.item_id} value={mat.item_id}>
-                        {mat.item_name} {mat.unit ? `(${mat.unit})` : ""}
-                      </option>
-                    ))}
-                  </select>
+                  />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">

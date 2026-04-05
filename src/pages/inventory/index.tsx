@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { Dropdown } from "../../components/Dropdown";
 import { useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { AddLocationModal } from "../../components/modals/AddLocationModal";
@@ -42,14 +43,12 @@ export function Inventory() {
     queryKey: ["locations"],
     queryFn: fetchLocations,
   });
+  
   const [selectedId, setSelectedId] = useState("");
+  const [showModal, setShowModal] = useState<boolean>(false);
   const selected = locations?.find((l) => l.location_id === selectedId);
-
   const { user } = useAuth();
   const manager = user[0].role === "project_manager";
-
-  const [showModal, setShowModal] = useState<boolean>(false);
-
 
   if (isLoading) {
     return (
@@ -71,14 +70,12 @@ export function Inventory() {
     <div className="p-6 space-y-8">
       <h1 className="text-2xl font-bold text-primary">Inventory</h1>
 
-      <select onChange={(e) => setSelectedId(e.target.value)}>
-        <option value="">Select a location</option>
-        {locations?.map((l) => (
-          <option key={l.location_id} value={l.location_id}>
-            {l.location_name}
-          </option>
-        ))}
-      </select>
+      <Dropdown
+        options={locations?.map((l) => ({ value: l.location_id, label: l.location_name ?? "" })) ?? []}
+        value={selectedId}
+        onChange={setSelectedId}
+        placeholder="Select a location"
+      />
 
       {!selected && (
         <p className="text-gray-400 text-center mt-12">

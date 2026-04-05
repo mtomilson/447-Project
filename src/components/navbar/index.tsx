@@ -44,7 +44,7 @@ export function Navbar() {
     <>
       {/* Desktop — top bar */}
       <nav className="hidden md:flex items-center justify-between px-6 py-3 bg-white border-b border-gray-200">
-        <span className="font-bold text-primary text-lg">MEC²</span>
+        <span className="font-bold text-primary text-2xl">MEC²</span>
         <div className="flex items-center gap-6">
           {links.map((link) => (
             <NavLink
