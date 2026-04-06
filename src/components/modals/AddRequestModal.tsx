@@ -9,6 +9,8 @@ type AddRequestModalProps = {
   locations: Location[];
 };
 
+// api call to backend
+
 async function createRequest(body: {
   requested_to: string;
   requested_from: string;
@@ -44,6 +46,8 @@ export default function AddRequestModal({
     { item_id: string; quantity: number }[]
   >([]); // shopping cart, an array of objects
   const [formError, setFormError] = useState("");
+  
+  // tanstack mutation calling the createRequest function and invalidating query key "requests" to refetch new data
 
   const addRequest = useMutation({
     mutationFn: createRequest,
@@ -57,8 +61,25 @@ export default function AddRequestModal({
     },
   });
 
+  // Adds items to the "cart" so multiple items can exist on one request
+
   async function handleAddToCart(e: React.MouseEvent) {
     e.preventDefault();
+
+    if(itemId === "") {
+        setFormError("Please select a material.")
+        return;
+    }
+
+    if(requestedTo === "") {
+        setFormError("Please select a location to request to.")
+        return;
+    }
+
+    if(requestItems.find((item) => item.item_id === itemId)) {
+        setFormError("Already in cart!");
+        return;
+    }
     setRequestItems([...requestItems, { item_id: itemId, quantity: quantity }]);
     setItemId("");
     setQuantity(1);
