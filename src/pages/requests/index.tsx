@@ -75,7 +75,7 @@ export default function RequestsPage() {
     <div className="min-h-screen bg-gray-50 p-6">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-primary">Material Requests</h1>
+        <h1 className="text-2xl font-bold text-primary">Requests</h1>
         <button
           onClick={() => setShowModal(true)}
           className="px-4 py-2 text-white font-semibold rounded-md hover:opacity-90 transition-opacity bg-secondary"
