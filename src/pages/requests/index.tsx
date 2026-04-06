@@ -1,38 +1,12 @@
 import { useState, useEffect } from "react";
-import { useAuth } from "../../context/AuthContext";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import toast from "react-hot-toast";
-import { Dropdown } from "../../components/Dropdown";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import AddRequestModal from "../../components/modals/AddRequestModal";
 
-type RequestItem = {
-  item_id: string;
-  quantity: number | null;
-  material_item: {
-    item_name: string;
-    unit: string | null;
-  };
-};
 
-type Request = {
-  request_id: string;
-  status: string | null;
-  created_at: string;
-  logged_by: string | null;
-  requested_from: string | null;
-  requested_to: string | null;
-  request_item: RequestItem[];
-};
-
-type Location = {
-  location_id: string;
-  location_name: string | null;
-  location_item: {
-    item_id: string;
-    material_item: { item_name: string; unit: string };
-  }[];
-};
+import type {Location, Request, RequestItem} from "../../types/requests"
 
 // Tanstack Query Functions
+
 
 async function fetchLocations(): Promise<Location[]> {
   const token = localStorage.getItem("token");
@@ -79,26 +53,11 @@ async function createRequest(body: {
 }
 
 export default function RequestsPage() {
-  const queryClient = useQueryClient();
-  const [showModal, setShowModal] = useState(false);
-
-  // Form state
-  const [requestedFrom, setRequestedFrom] = useState("");
-  const [requestedTo, setRequestedTo] = useState("");
-
-  const [itemId, setItemId] = useState("");
-  const [quantity, setQuantity] = useState<number>(1);
-  const [requestItems, setRequestItems] = useState<
-    { item_id: string; quantity: number }[]
-  >([]); // shopping cart, an array of objects
-  const [formError, setFormError] = useState("");
-
+  const [showModal, setShowModal] = useState<boolean>(false)
   // tanstack query functions
 
   const {
     data: locations,
-    isLoading,
-    isError,
   } = useQuery({
     queryKey: ["locations"],
     queryFn: fetchLocations,
@@ -109,49 +68,8 @@ export default function RequestsPage() {
     queryFn: fetchRequests,
   });
 
-  const fromMaterials = locations
-    ?.find((loc) => loc.location_id === requestedFrom)
-    ?.location_item.map((item) => {
-      return {
-        item_id: item.item_id,
-        item_name: item.material_item.item_name,
-        unit: item.material_item.unit,
-      };
-    });
-
   function closeModal() {
     setShowModal(false);
-    setFormError("");
-  }
-
-  const addRequest = useMutation({
-    mutationFn: createRequest,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["requests"] });
-      toast.success("Successfully Created Request!");
-      closeModal();
-    },
-    onError: (err: Error) => {
-      setFormError(err.message);
-    },
-  });
-
-  async function handleAddToCart(e: React.MouseEvent) {
-    e.preventDefault();
-    setRequestItems([...requestItems, {item_id: itemId, quantity: quantity}])
-    setItemId("");
-    setQuantity(1);
-  }
-
-  async function handleSubmit() {
-    addRequest.mutate({
-      requested_to: requestedTo,
-      requested_from: requestedFrom,
-      items: requestItems,
-    });
-    setRequestedFrom("");
-    setRequestedTo("");
-    setRequestItems([]);
   }
 
   function getStatusColor(status: string | null) {
@@ -219,107 +137,8 @@ export default function RequestsPage() {
         </div>
       )}
 
-      {/* New Request Modal */}
-      {showModal && (
-        <div className="fixed inset-0 bg-black/40 bg-opacity-50 flex items-center justify-center z-50 px-4">
-          <div className="bg-white rounded-lg shadow-lg w-full max-w-sm p-8">
-            <>
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-bold text-primary">New Request</h2>
-                <button
-                  onClick={closeModal}
-                  className="text-gray-400 hover:text-gray-600 text-xl"
-                >
-                  ✕
-                </button>
-              </div>
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    From (Warehouse)
-                  </label>
-                  <Dropdown
-                    options={
-                      locations?.map((loc) => ({
-                        value: loc.location_id,
-                        label: loc.location_name ?? "",
-                      })) ?? []
-                    }
-                    value={requestedFrom}
-                    onChange={setRequestedFrom}
-                    placeholder="Select warehouse"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    To (Jobsite)
-                  </label>
-                  <Dropdown
-                    options={
-                      locations?.map((loc) => ({
-                        value: loc.location_id,
-                        label: loc.location_name ?? "",
-                      })) ?? []
-                    }
-                    value={requestedTo}
-                    onChange={setRequestedTo}
-                    placeholder="Select jobsite"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Material
-                  </label>
-                  <Dropdown
-                    options={
-                      fromMaterials?.map((mat) => ({
-                        value: mat.item_id,
-                        label: `${mat.item_name}${mat.unit ? ` (${mat.unit})` : ""}`,
-                      })) ?? []
-                    }
-                    value={itemId}
-                    onChange={setItemId}
-                    placeholder="Select material"
-                    required
-                    emptyMessage={"No materials at selected location"}
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Quantity
-                  </label>
-                  <input
-                    type="number"
-                    min={1}
-                    value={quantity}
-                    onChange={(e) => setQuantity(Number(e.target.value))}
-                    required
-                    className="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2"
-                  />
-                </div>
-                {formError && (
-                  <p className="text-red-500 text-sm text-center">
-                    {formError}
-                  </p>
-                )}
-                <button type="button" onClick={(e) => handleAddToCart(e)}>
-                  Add To Cart
-                </button>
-                <button
-                  type="submit"
-                  onClick={handleSubmit}
-                  disabled={addRequest.isPending}
-                  className="w-full py-3 bg-secondary text-white font-semibold rounded-md hover:opacity-90 transition-opacity disabled:opacity-50"
-                >
-                  {addRequest.isPending ? "Submitting..." : "Submit Request"}
-                </button>
-              </form>
-            </>
-          </div>
-        </div>
-      )}
+      {showModal && <AddRequestModal onClose={closeModal} locations={locations ?? []} />}
+
     </div>
   );
 }
