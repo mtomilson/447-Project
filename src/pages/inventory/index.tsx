@@ -67,7 +67,7 @@ export function Inventory() {
   }
 
   return (
-    <div className="p-6 space-y-8">
+    <div className="min-h-screen bg-gray-50 p-6 space-y-8">
       <h1 className="text-2xl font-bold text-primary">Inventory</h1>
 
       <Dropdown
