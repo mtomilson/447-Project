@@ -26,13 +26,10 @@ type Request = {
 type Location = {
   location_id: string;
   location_name: string | null;
-  location_item: {item_id: string; material_item: {item_name: string; unit: string;}}[];
-};
-
-type MaterialItem = {
-  item_id: string;
-  item_name: string;
-  unit: string | null;
+  location_item: {
+    item_id: string;
+    material_item: { item_name: string; unit: string };
+  }[];
 };
 
 // Tanstack Query Functions
@@ -59,20 +56,10 @@ async function fetchRequests(): Promise<Request[]> {
   return data.data;
 }
 
-async function fetchMaterials(): Promise<MaterialItem[]> {
-  const token = localStorage.getItem("token");
-  const res = await fetch(`${import.meta.env.VITE_API_URL}/api/material`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-  const data = await res.json();
-  return data.data;
-}
-
 async function createRequest(body: {
   requested_to: string;
   requested_from: string;
+  items: {item_id: string; quantity: number}[];
 }) {
   const token = localStorage.getItem("token");
   const res = await fetch(
@@ -98,8 +85,12 @@ export default function RequestsPage() {
   // Form state
   const [requestedFrom, setRequestedFrom] = useState("");
   const [requestedTo, setRequestedTo] = useState("");
+
   const [itemId, setItemId] = useState("");
   const [quantity, setQuantity] = useState<number>(1);
+  const [requestItems, setRequestItems] = useState<
+    { item_id: string; quantity: number }[]
+  >([]); // shopping cart, an array of objects
   const [formError, setFormError] = useState("");
 
   // tanstack query functions
@@ -112,27 +103,27 @@ export default function RequestsPage() {
     queryKey: ["locations"],
     queryFn: fetchLocations,
   });
-  const { data: materials } = useQuery({
-    queryKey: ["materials"],
-    queryFn: fetchMaterials,
-  });
+
   const { data: requests, isLoading: isRequestLoading } = useQuery({
     queryKey: ["requests"],
     queryFn: fetchRequests,
   });
 
-  const fromMaterials = locations?.find((loc) => loc.location_id === requestedFrom)?.location_item.map((item) => {
-    return {
-      item_id: item.item_id,
-      item_name: item.material_item.item_name,
-      unit: item.material_item.unit
-    }
-  })
-  
+  const fromMaterials = locations
+    ?.find((loc) => loc.location_id === requestedFrom)
+    ?.location_item.map((item) => {
+      return {
+        item_id: item.item_id,
+        item_name: item.material_item.item_name,
+        unit: item.material_item.unit,
+      };
+    });
+
   function closeModal() {
     setShowModal(false);
     setFormError("");
   }
+
   const addRequest = useMutation({
     mutationFn: createRequest,
     onSuccess: () => {
@@ -144,12 +135,23 @@ export default function RequestsPage() {
       setFormError(err.message);
     },
   });
-  async function handleSubmit(e: React.SubmitEvent) {
+
+  async function handleAddToCart(e: React.MouseEvent) {
     e.preventDefault();
+    setRequestItems([...requestItems, {item_id: itemId, quantity: quantity}])
+    setItemId("");
+    setQuantity(1);
+  }
+
+  async function handleSubmit() {
     addRequest.mutate({
       requested_to: requestedTo,
       requested_from: requestedFrom,
+      items: requestItems,
     });
+    setRequestedFrom("");
+    setRequestedTo("");
+    setRequestItems([]);
   }
 
   function getStatusColor(status: string | null) {
@@ -237,7 +239,12 @@ export default function RequestsPage() {
                     From (Warehouse)
                   </label>
                   <Dropdown
-                    options={locations?.map((loc) => ({ value: loc.location_id, label: loc.location_name ?? "" })) ?? []}
+                    options={
+                      locations?.map((loc) => ({
+                        value: loc.location_id,
+                        label: loc.location_name ?? "",
+                      })) ?? []
+                    }
                     value={requestedFrom}
                     onChange={setRequestedFrom}
                     placeholder="Select warehouse"
@@ -249,7 +256,12 @@ export default function RequestsPage() {
                     To (Jobsite)
                   </label>
                   <Dropdown
-                    options={locations?.map((loc) => ({ value: loc.location_id, label: loc.location_name ?? "" })) ?? []}
+                    options={
+                      locations?.map((loc) => ({
+                        value: loc.location_id,
+                        label: loc.location_name ?? "",
+                      })) ?? []
+                    }
                     value={requestedTo}
                     onChange={setRequestedTo}
                     placeholder="Select jobsite"
@@ -261,7 +273,12 @@ export default function RequestsPage() {
                     Material
                   </label>
                   <Dropdown
-                    options={fromMaterials?.map((mat) => ({ value: mat.item_id, label: `${mat.item_name}${mat.unit ? ` (${mat.unit})` : ""}` })) ?? []}
+                    options={
+                      fromMaterials?.map((mat) => ({
+                        value: mat.item_id,
+                        label: `${mat.item_name}${mat.unit ? ` (${mat.unit})` : ""}`,
+                      })) ?? []
+                    }
                     value={itemId}
                     onChange={setItemId}
                     placeholder="Select material"
@@ -287,8 +304,12 @@ export default function RequestsPage() {
                     {formError}
                   </p>
                 )}
+                <button type="button" onClick={(e) => handleAddToCart(e)}>
+                  Add To Cart
+                </button>
                 <button
                   type="submit"
+                  onClick={handleSubmit}
                   disabled={addRequest.isPending}
                   className="w-full py-3 bg-secondary text-white font-semibold rounded-md hover:opacity-90 transition-opacity disabled:opacity-50"
                 >
