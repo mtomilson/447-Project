@@ -8,6 +8,7 @@ const router = Router();
  */
 
 router.get("/", async (req, res) => {
+  
   try {
     const { data, error } = await dbClient
       .from("requests")
@@ -40,6 +41,39 @@ router.patch("/:id", async (req, res) => {
   }
 
   return res.json({ data });
+});
+
+router.post("/create", async (req, res) => {
+  const { requested_to, requested_from, items } = req.body;
+  const logged_by = req.user!.user_id;
+
+  const { data, error } = await dbClient
+    .from("requests")
+    .insert({
+      logged_by: logged_by,
+      requested_to: requested_to,
+      requested_from: requested_from,
+    })
+    .select();
+
+  if (error) {
+    return res.status(500).json({ error: error.message });
+  }
+  
+
+  const request_id = data[0].request_id;
+  for (let i = 0; i < items.length; i++) {
+    const { data, error } = await dbClient.from("request_item").insert({
+      request_id: request_id,
+      item_id: items[i].item_id,
+      quantity: items[i].quantity,
+    });
+
+    if(error) {
+      return res.status(500).json({error: error.message});
+    }
+  }
+  return res.status(201).json({message: "success"})
 });
 
 export default router;

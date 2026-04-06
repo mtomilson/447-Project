@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast"
 
 export default function Login() {
   const { login } = useAuth();
@@ -25,8 +26,11 @@ export default function Login() {
     try {
       const loggedInUser = await login(email, password);
       navigate(roleRoutes[loggedInUser[0].role] ?? "/")
+      toast.success("Login Success! Welcome, " + loggedInUser[0].name)
+
     } catch (error: any) {
       setError(error.message || "Login Failed");
+      toast.error("Login Failed! Incorrect Email or Password")
     } finally {
       setLoading(false);
     }
@@ -76,6 +80,7 @@ export default function Login() {
           <button
             type="submit"
             className="w-full py-3 bg-secondary text-white font-semibold rounded-md hover:opacity-90 transition-opacity disabled:opacity-50"
+            disabled={loading}
           >
             {loading ? "Signing in..." : "Sign In"}
           </button>
