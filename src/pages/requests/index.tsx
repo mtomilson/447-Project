@@ -1,12 +1,10 @@
-import { useState, useEffect } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import AddRequestModal from "../../components/modals/AddRequestModal";
 
-
-import type {Location, Request, RequestItem} from "../../types/requests"
+import type { Location, Request } from "../../types/requests";
 
 // Tanstack Query Functions
-
 
 async function fetchLocations(): Promise<Location[]> {
   const token = localStorage.getItem("token");
@@ -30,35 +28,11 @@ async function fetchRequests(): Promise<Request[]> {
   return data.data;
 }
 
-async function createRequest(body: {
-  requested_to: string;
-  requested_from: string;
-  items: {item_id: string; quantity: number}[];
-}) {
-  const token = localStorage.getItem("token");
-  const res = await fetch(
-    `${import.meta.env.VITE_API_URL}/api/request/create`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(body),
-    },
-  );
-  const data = await res.json();
-  if (!res.ok) throw new Error(data.error);
-  return data;
-}
-
 export default function RequestsPage() {
-  const [showModal, setShowModal] = useState<boolean>(false)
+  const [showModal, setShowModal] = useState<boolean>(false);
   // tanstack query functions
 
-  const {
-    data: locations,
-  } = useQuery({
+  const { data: locations } = useQuery({
     queryKey: ["locations"],
     queryFn: fetchLocations,
   });
@@ -70,6 +44,14 @@ export default function RequestsPage() {
 
   function closeModal() {
     setShowModal(false);
+  }
+
+  function getLocationName(id: string | null) {
+    if (!id) return "-";
+
+    return (
+      locations?.find((loc) => loc.location_id === id)?.location_name ?? "-"
+    );
   }
 
   function getStatusColor(status: string | null) {
@@ -124,6 +106,16 @@ export default function RequestsPage() {
                   {req.status}
                 </span>
               </div>
+
+              <div className="text-sm text-gray-500 mb-2">
+                <span className="capitalize">
+                  From: {getLocationName(req.requested_from)}
+                </span>
+                <span className="mx-2">→</span>
+                <span className="capitalize">
+                  To: {getLocationName(req.requested_to)}
+                </span>
+              </div>
               <div className="text-sm text-gray-700 space-y-1">
                 {req.request_item.map((item, i) => (
                   <p key={i}>
@@ -137,8 +129,9 @@ export default function RequestsPage() {
         </div>
       )}
 
-      {showModal && <AddRequestModal onClose={closeModal} locations={locations ?? []} />}
-
+      {showModal && (
+        <AddRequestModal onClose={closeModal} locations={locations ?? []} />
+      )}
     </div>
   );
 }
