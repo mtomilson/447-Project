@@ -25,3 +25,5 @@ export type Location = {
     material_item: { item_name: string; unit: string };
   }[];
 };
+
+export type Status = "requested" | "approved" | "denied" | "shipped" | "delivered";

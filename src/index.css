@@ -2,5 +2,9 @@
 
 @theme {
     --color-primary: #013868;
-    --color-secondary: #7AC142; 
+    --color-secondary: #7AC142;
+}
+
+body {
+    background-color: #f9fafb; /* gray-50 */
 }

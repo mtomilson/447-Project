@@ -18,6 +18,7 @@ function App() {
       <BrowserRouter>
         <Toaster position="top-center" />
         <Layout />
+        <div className="pb-20 md:pb-0">
         <Routes>
           <Route path="/" element={<Login />} />
           <Route element={<ProtectedRoute role="jobsite_logistic" />}>
@@ -44,6 +45,7 @@ function App() {
             <Route path="/inventory" element={<Inventory />} />
           </Route>
         </Routes>
+        </div>
       </BrowserRouter>
     </AuthProvider>
   );
