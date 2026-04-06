@@ -26,6 +26,7 @@ type Request = {
 type Location = {
   location_id: string;
   location_name: string | null;
+  location_item: {item_id: string; material_item: {item_name: string; unit: string;}}[];
 };
 
 type MaterialItem = {
@@ -120,6 +121,14 @@ export default function RequestsPage() {
     queryFn: fetchRequests,
   });
 
+  const fromMaterials = locations?.find((loc) => loc.location_id === requestedFrom)?.location_item.map((item) => {
+    return {
+      item_id: item.item_id,
+      item_name: item.material_item.item_name,
+      unit: item.material_item.unit
+    }
+  })
+  
   function closeModal() {
     setShowModal(false);
     setFormError("");
@@ -252,11 +261,12 @@ export default function RequestsPage() {
                     Material
                   </label>
                   <Dropdown
-                    options={materials?.map((mat) => ({ value: mat.item_id, label: `${mat.item_name}${mat.unit ? ` (${mat.unit})` : ""}` })) ?? []}
+                    options={fromMaterials?.map((mat) => ({ value: mat.item_id, label: `${mat.item_name}${mat.unit ? ` (${mat.unit})` : ""}` })) ?? []}
                     value={itemId}
                     onChange={setItemId}
                     placeholder="Select material"
                     required
+                    emptyMessage={"No materials at selected location"}
                   />
                 </div>
                 <div>
