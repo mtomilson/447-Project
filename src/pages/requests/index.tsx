@@ -71,6 +71,7 @@ export default function RequestsPage() {
     }) => updateStatus(requestId, newStatus),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["requests"] });
+      queryClient.invalidateQueries({queryKey: ["locations"]})
       toast.success("Updated Status");
     },
     onError: () => {
