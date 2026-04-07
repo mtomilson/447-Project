@@ -8,6 +8,7 @@ import { WarehouseDashboard } from "./pages/dashboard/warehouse/index";
 import { ManagerDashboard } from "./pages/dashboard/manager/index";
 import { AdminDashboard } from "./pages/dashboard/admin/index";
 import RequestsPage from "./pages/requests";
+import OrdersPage from "./pages/orders";
 import { Inventory } from "./pages/inventory/index";
 import { Layout } from "./components/Layout";
 import { Toaster } from "react-hot-toast";
@@ -25,6 +26,7 @@ function App() {
             <Route path="/dashboard/jobsite" element={<JobsiteDashboard />} />
           </Route>
           <Route path="/requests" element={<RequestsPage />} />
+          <Route path="/orders" element={<OrdersPage />} />
 
           <Route element={<ProtectedRoute role="warehouse_logistic" />}>
             <Route
