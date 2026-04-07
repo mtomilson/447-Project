@@ -25,7 +25,7 @@ export default function Login() {
 
     try {
       const loggedInUser = await login(email, password);
-      navigate(roleRoutes[loggedInUser[0].role] ?? "/")
+      navigate("/inventory")
       toast.success("Login Success! Welcome, " + loggedInUser[0].name)
 
     } catch (error: any) {
