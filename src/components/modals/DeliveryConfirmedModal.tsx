@@ -4,6 +4,7 @@ import type { PayOrder } from "../../types/requests";
 type Props = {
   order: PayOrder;
   onClose: () => void;
+  isLoading?: boolean;
   onConfirm: (
     receivedItems: { po_item_id: string; received_quantity: number }[],
   ) => void;
@@ -12,6 +13,7 @@ type Props = {
 export default function DeliveryConfirmedModal({
   order,
   onClose,
+  isLoading = false,
   onConfirm,
 }: Props) {
   const [received, setReceived] = useState<Record<string, number>>(
@@ -61,9 +63,10 @@ export default function DeliveryConfirmedModal({
 
         <button
           onClick={handleSubmit}
-          className="w-full py-3 bg-secondary text-white font-semibold rounded-md hover:opacity-90 transition-opacity"
+          disabled={isLoading}
+          className="w-full py-3 bg-secondary text-white font-semibold rounded-md hover:opacity-90 transition-opacity disabled:opacity-60 disabled:cursor-not-allowed"
         >
-          Confirm Delivery
+          {isLoading ? "Confirming..." : "Confirm Delivery"}
         </button>
       </div>
     </div>

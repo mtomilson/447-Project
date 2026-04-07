@@ -30,7 +30,7 @@ app.use(express.json());
 
 app.use("/api/login", loginRouter);
 app.use("/api/request", authenticate, requestRouter);
-app.use("/api/location", locationRouter);
+app.use("/api/location", authenticate, locationRouter);
 app.use("/api/material", authenticate, materialRouter);
 app.use("/api/orders", authenticate, ordersRouter)
 
