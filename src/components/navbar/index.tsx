@@ -9,24 +9,20 @@ type NavItem = {
 // Add or remove links per role here
 const navConfig: Record<string, NavItem[]> = {
   jobsite_logistic: [
-    { label: "Dashboard", path: "/dashboard/jobsite" },
     { label: "Inventory", path: "/inventory" },
     { label: "Pay Orders", path: "/orders" }
   ],
   warehouse_logistic: [
-    { label: "Dashboard", path: "/dashboard/warehouse" },
     { label: "Inventory", path: "/inventory" },
     { label: "Pay Orders", path: "/orders" }
 
   ],
   project_manager: [
-    { label: "Dashboard", path: "/dashboard/manager" },
     { label: "Inventory", path: "/inventory" },
     { label: "Pay Orders", path: "/orders" }
 
   ],
   system_administrator: [
-    { label: "Dashboard", path: "/dashboard/admin" },
     { label: "Inventory", path: "/inventory" },
     { label: "Pay Orders", path: "/orders" },
   ],

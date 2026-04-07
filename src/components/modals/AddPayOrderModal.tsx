@@ -219,13 +219,13 @@ export default function AddPayOrderModal({ onClose, locations }: AddPayOrderModa
             onClick={handleAddToCart}
             className="w-full py-2 border-2 border-secondary text-secondary font-semibold rounded-md hover:bg-secondary hover:text-white transition-colors"
           >
-            + Add to Cart
+            + Add to Order
           </button>
 
           {cartItems.length > 0 && (
             <div className="border border-gray-200 rounded-md overflow-hidden">
               <p className="text-xs font-semibold text-gray-500 uppercase px-3 py-2 bg-gray-50">
-                Cart
+                Order
               </p>
               <ul className="divide-y divide-gray-100">
                 {cartItems.map((item) => (
