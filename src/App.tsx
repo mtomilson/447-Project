@@ -10,20 +10,21 @@ import { AdminDashboard } from "./pages/dashboard/admin/index";
 import RequestsPage from "./pages/requests";
 import { Inventory } from "./pages/inventory/index";
 import { Layout } from "./components/Layout";
-import { Toaster } from "react-hot-toast"
+import { Toaster } from "react-hot-toast";
 
 function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
-      <Toaster position="top-center"/>
+        <Toaster position="top-center" />
         <Layout />
+        <div className="pb-20 md:pb-0">
         <Routes>
           <Route path="/" element={<Login />} />
           <Route element={<ProtectedRoute role="jobsite_logistic" />}>
             <Route path="/dashboard/jobsite" element={<JobsiteDashboard />} />
-            <Route path="/requests" element={<RequestsPage />} />
           </Route>
+          <Route path="/requests" element={<RequestsPage />} />
 
           <Route element={<ProtectedRoute role="warehouse_logistic" />}>
             <Route
@@ -44,6 +45,7 @@ function App() {
             <Route path="/inventory" element={<Inventory />} />
           </Route>
         </Routes>
+        </div>
       </BrowserRouter>
     </AuthProvider>
   );

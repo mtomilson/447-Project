@@ -67,8 +67,18 @@ export function Inventory() {
   }
 
   return (
-    <div className="p-6 space-y-8">
-      <h1 className="text-2xl font-bold text-primary">Inventory</h1>
+    <div className="min-h-screen bg-gray-50 p-6 space-y-8">
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-2xl font-bold text-primary">Inventory</h1>
+        {manager && (
+          <button
+            onClick={() => setShowModal(true)}
+            className="px-4 py-2 text-white font-semibold rounded-md hover:opacity-90 transition-opacity bg-secondary"
+          >
+            + Add Location
+          </button>
+        )}
+      </div>
 
       <Dropdown
         options={locations?.map((l) => ({ value: l.location_id, label: l.location_name ?? "" })) ?? []}
@@ -127,19 +137,7 @@ export function Inventory() {
           </div>
         </div>
       )}
-      {manager && (
-        <div className="flex items-center justify-center">
-          <button className="border-secondary border-3 px-3 py-3 rounded-md hover:cursor-pointer hover:bg-gray-100 text-secondary"
-          onClick={() => {
-            setShowModal(true);
-          }}
-          >
-            Add Location
-          </button>
-          <AddLocationModal open={showModal} onClose={() => setShowModal(false)} />
-
-        </div>
-      )}
+      <AddLocationModal open={showModal} onClose={() => setShowModal(false)} />
     </div>
   );
 }

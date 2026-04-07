@@ -16,6 +16,8 @@ const navConfig: Record<string, NavItem[]> = {
   warehouse_logistic: [
     { label: "Dashboard", path: "/dashboard/warehouse" },
     { label: "Inventory", path: "/inventory" },
+    { label: "Requests", path: "/requests"}
+
   ],
   project_manager: [
     { label: "Dashboard", path: "/dashboard/manager" },
@@ -26,6 +28,7 @@ const navConfig: Record<string, NavItem[]> = {
   system_administrator: [
     { label: "Dashboard", path: "/dashboard/admin" },
     { label: "Inventory", path: "/inventory" },
+    
   ],
 };
 
@@ -67,7 +70,7 @@ export function Navbar() {
       </nav>
 
       {/* Mobile — bottom bar */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 flex justify-around py-2 z-50">
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 flex justify-around py-4 z-50">
         {links.map((link) => (
           <NavLink
             key={link.path}

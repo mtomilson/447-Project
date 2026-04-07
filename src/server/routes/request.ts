@@ -8,7 +8,6 @@ const router = Router();
  */
 
 router.get("/", async (req, res) => {
-  
   try {
     const { data, error } = await dbClient
       .from("requests")
@@ -40,6 +39,74 @@ router.patch("/:id", async (req, res) => {
     return res.status(500).json({ error: error.message });
   }
 
+  // check if the new status we just updated to is shipped, if it is we want to pull the requested from location and deduct inventory
+  const { data: requestData } = await dbClient
+    .from("requests")
+    .select(`*, request_item(*)`)
+    .eq("request_id", requestId)
+    .single();
+
+  if (!requestData) {
+    return res.status(404).json({ error: "Request Not Found" });
+  }
+  if (!requestData.requested_from)
+    return res.status(400).json({ error: "No source location on request" });
+
+  if (newStatus === "shipped") {
+    for (let i = 0; i < requestData.request_item.length; i++) {
+      const { data: location } = await dbClient
+        .from("location_item")
+        .select("quantity")
+        .eq("item_id", requestData.request_item[i].item_id)
+        .eq("location_id", requestData.requested_from)
+        .single();
+      if (!location) continue;
+
+      const newQuantity =
+        (location.quantity ?? 0) - (requestData.request_item[i].quantity ?? 0);
+      if (newQuantity < 0) {
+        return res
+          .status(400)
+          .json({ error: "Insufficient inventory to fulfill this request" });
+      }
+      const { error } = await dbClient
+        .from("location_item")
+        .update({ quantity: newQuantity })
+        .eq("item_id", requestData.request_item[i].item_id)
+        .eq("location_id", requestData.requested_from);
+      if (error) return res.status(500).json({ error: error.message });
+    }
+  }
+
+  if (newStatus === "delivered") {
+    if (!requestData.requested_to)
+      return res.status(400).json({ error: "No destination location on request" });
+
+    for (let i = 0; i < requestData.request_item.length; i++) {
+      const item = requestData.request_item[i];
+
+      // fetch current quantity at jobsite, may not exist yet
+      const { data: existing } = await dbClient
+        .from("location_item")
+        .select("quantity")
+        .eq("item_id", item.item_id)
+        .eq("location_id", requestData.requested_to)
+        .single();
+
+      const newQuantity = (existing?.quantity ?? 0) + (item.quantity ?? 0);
+      
+      // upsert will update if it exists, insert if it doesn't 
+
+      const { error } = await dbClient
+        .from("location_item")
+        .upsert({
+          location_id: requestData.requested_to,
+          item_id: item.item_id,
+          quantity: newQuantity,
+        }, {onConflict: "location_id, item_id"});
+      if (error) return res.status(500).json({ error: error.message });
+    }
+  }
   return res.json({ data });
 });
 
@@ -59,7 +126,6 @@ router.post("/create", async (req, res) => {
   if (error) {
     return res.status(500).json({ error: error.message });
   }
-  
 
   const request_id = data[0].request_id;
   for (let i = 0; i < items.length; i++) {
@@ -69,11 +135,11 @@ router.post("/create", async (req, res) => {
       quantity: items[i].quantity,
     });
 
-    if(error) {
-      return res.status(500).json({error: error.message});
+    if (error) {
+      return res.status(500).json({ error: error.message });
     }
   }
-  return res.status(201).json({message: "success"})
+  return res.status(201).json({ message: "success" });
 });
 
 export default router;
