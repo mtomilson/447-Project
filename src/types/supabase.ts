@@ -130,7 +130,7 @@ export type Database = {
           {
             foreignKeyName: "location_item_item_id_fkey"
             columns: ["item_id"]
-            isOneToOne: true
+            isOneToOne: false
             referencedRelation: "material_item"
             referencedColumns: ["item_id"]
           },
@@ -161,32 +161,113 @@ export type Database = {
         }
         Relationships: []
       }
-      pay_order: {
+      pay_order_item: {
         Row: {
-          amount: number | null
-          created_at: string
-          created_by: string | null
-          pay_order_id: number
+          item_id: string
+          po_id: string
+          po_item_id: string
+          quantity: number
+          received_quantity: number | null
         }
         Insert: {
-          amount?: number | null
-          created_at?: string
-          created_by?: string | null
-          pay_order_id?: number
+          item_id: string
+          po_id: string
+          po_item_id?: string
+          quantity: number
+          received_quantity?: number | null
         }
         Update: {
-          amount?: number | null
-          created_at?: string
-          created_by?: string | null
-          pay_order_id?: number
+          item_id?: string
+          po_id?: string
+          po_item_id?: string
+          quantity?: number
+          received_quantity?: number | null
         }
         Relationships: [
           {
-            foreignKeyName: "pay_order_created_by_fkey"
+            foreignKeyName: "pay_order_item_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "material_item"
+            referencedColumns: ["item_id"]
+          },
+          {
+            foreignKeyName: "pay_order_item_po_id_fkey"
+            columns: ["po_id"]
+            isOneToOne: false
+            referencedRelation: "pay_orders"
+            referencedColumns: ["po_id"]
+          },
+        ]
+      }
+      pay_orders: {
+        Row: {
+          created_at: string
+          created_by: string
+          destination_location_id: string
+          has_missing_items: boolean | null
+          notes: string | null
+          po_id: string
+          po_number: string
+          signed: string | null
+          source_location_id: string | null
+          status: string
+          vendor: string | null
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          destination_location_id: string
+          has_missing_items?: boolean | null
+          notes?: string | null
+          po_id?: string
+          po_number?: string
+          signed?: string | null
+          source_location_id?: string | null
+          status?: string
+          vendor?: string | null
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          destination_location_id?: string
+          has_missing_items?: boolean | null
+          notes?: string | null
+          po_id?: string
+          po_number?: string
+          signed?: string | null
+          source_location_id?: string | null
+          status?: string
+          vendor?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pay_orders_created_by_fkey"
             columns: ["created_by"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "pay_orders_destination_location_id_fkey"
+            columns: ["destination_location_id"]
+            isOneToOne: false
+            referencedRelation: "location"
+            referencedColumns: ["location_id"]
+          },
+          {
+            foreignKeyName: "pay_orders_signed_fkey"
+            columns: ["signed"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "pay_orders_source_location_id_fkey"
+            columns: ["source_location_id"]
+            isOneToOne: false
+            referencedRelation: "location"
+            referencedColumns: ["location_id"]
           },
         ]
       }

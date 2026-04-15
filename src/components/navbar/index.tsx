@@ -10,21 +10,21 @@ type NavItem = {
 const navConfig: Record<string, NavItem[]> = {
   jobsite_logistic: [
     { label: "Inventory", path: "/inventory" },
-    { label: "Requests", path: "/requests"}
+    { label: "Pay Orders", path: "/orders" }
   ],
   warehouse_logistic: [
     { label: "Inventory", path: "/inventory" },
-    { label: "Requests", path: "/requests"}
+    { label: "Pay Orders", path: "/orders" }
 
   ],
   project_manager: [
     { label: "Inventory", path: "/inventory" },
-    { label: "Requests", path: "/requests"}
+    { label: "Pay Orders", path: "/orders" }
 
   ],
   system_administrator: [
     { label: "Inventory", path: "/inventory" },
-    
+    { label: "Pay Orders", path: "/orders" },
   ],
 };
 

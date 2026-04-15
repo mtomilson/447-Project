@@ -27,3 +27,32 @@ export type Location = {
 };
 
 export type Status = "requested" | "approved" | "denied" | "shipped" | "delivered";
+
+export type POStatus = "created" | "shipped" | "delivered";
+
+export type PayOrderItem = {
+  po_item_id: string;
+  item_id: string;
+  quantity: number;
+  material_item: {
+    item_name: string;
+    unit: string | null;
+  };
+  received_quantity: number | null;
+};
+
+export type PayOrder = {
+  po_id: string;
+  po_number: string;
+  status: POStatus;
+  vendor: string | null;
+  source_location_id: string | null;
+  destination_location_id: string;
+  notes: string | null;
+  created_by: string;
+  created_at: string;
+  pay_order_item: PayOrderItem[];
+  signed: string | null;
+  signer: { name: string } | null;
+  has_missing_items: boolean;
+};
