@@ -3,6 +3,7 @@ import { Dropdown } from "../../components/Dropdown";
 import { useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { AddLocationModal } from "../../components/modals/AddLocationModal";
+import { MaterialAutocomplete } from "../../components/MaterialAutocomplete";
 
 type MaterialItem = {
   item_id: string;
@@ -43,8 +44,17 @@ export function Inventory() {
     queryKey: ["locations"],
     queryFn: fetchLocations,
   });
-  
+
   const [selectedId, setSelectedId] = useState("");
+  const [itemSearch, setItemSearch] = useState<string>("");
+  const [selectedItem, setSelectedItem] = useState<MaterialItem | null>(null);
+  const searchResults = selectedItem
+    ? (locations ?? []).flatMap((loc) =>
+        loc.location_item
+          .filter((li) => li.item_id === selectedItem.item_id)
+          .map((li) => ({ location: loc, li })),
+      )
+    : [];
   const [showModal, setShowModal] = useState<boolean>(false);
   const selected = locations?.find((l) => l.location_id === selectedId);
   const { user } = useAuth();
@@ -79,17 +89,38 @@ export function Inventory() {
           </button>
         )}
       </div>
+      <div className="flex flex-col md:flex-row items-center gap-4">
+        <Dropdown
+          options={
+            locations?.map((l) => ({
+              value: l.location_id,
+              label: l.location_name ?? "",
+            })) ?? []
+          }
+          value={selectedId}
+          onChange={(value) => {
+            setSelectedId(value);
+            setItemSearch("");
+            setSelectedItem(null);
+          }}
+          placeholder="Select a location"
+        />
+        <span className="text-gray-400 text-sm">or</span>
+        <MaterialAutocomplete
+          value={itemSearch}
+          onChange={setItemSearch}
+          onSelect={(item) => {
+            setItemSearch(item.item_name);
+            setSelectedItem(item);
+            setSelectedId("");
+          }}
+          placeholder="Search by Item"
+        />
+      </div>
 
-      <Dropdown
-        options={locations?.map((l) => ({ value: l.location_id, label: l.location_name ?? "" })) ?? []}
-        value={selectedId}
-        onChange={setSelectedId}
-        placeholder="Select a location"
-      />
-
-      {!selected && (
+      {!selected && !selectedItem && (
         <p className="text-gray-400 text-center mt-12">
-          Select a location to view inventory.
+          Select a location or search an item to view inventory.
         </p>
       )}
       {selected && (
@@ -129,6 +160,47 @@ export function Inventory() {
                       <td className="px-4 py-3">
                         {item.material_item.unit ?? "—"}
                       </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+      {selectedItem && (
+        <div>
+          <p className="py-3 font-bold text-secondary capitalize text-l">
+            {selectedItem.item_name}
+          </p>
+          <div className="overflow-x-auto rounded-lg border border-gray-200">
+            <table className="w-full text-sm text-left table-fixed">
+              <thead className="bg-gray-50 text-gray-600 uppercase text-xs">
+                <tr>
+                  <th className="px-4 py-3 w-1/2">Location</th>
+                  <th className="px-4 py-3 w-1/4">Quantity</th>
+                  <th className="px-4 py-3 w-1/4">Unit</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100">
+                {searchResults.length === 0 ? (
+                  <tr>
+                    <td
+                      colSpan={3}
+                      className="px-4 py-4 text-gray-400 text-center"
+                    >
+                      No locations stock this item.
+                    </td>
+                  </tr>
+                ) : (
+                  searchResults.map(({ location, li }) => (
+                    <tr
+                      key={location.location_id}
+                      className="bg-white hover:bg-gray-50"
+                    >
+                      <td className="px-4 py-3">{location.location_name ?? "—"}</td>
+                      <td className="px-4 py-3">{li.quantity ?? "—"}</td>
+                      <td className="px-4 py-3">{li.material_item.unit ?? "—"}</td>
                     </tr>
                   ))
                 )}
