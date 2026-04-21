@@ -119,8 +119,8 @@ router.patch("/:id", async (req, res) => {
   await resend.emails.send({
     from: "onboarding@resend.dev",
     to: "mtomils1@umbc.edu",
-    subject: "Order Status has been Updated",
-    html: `<p>Your order has been marked as <strong>${newStatus}</strong>.</p>`,
+    subject: `Order, ${order.po_number}, Status has been Updated`,
+    html: `<p>Your order, <strong>${order.po_number}</strong>, has been marked as <strong>${newStatus}</strong>.<p>`,
   });
 
   // shipped: deduct from source location (only if one exists)
