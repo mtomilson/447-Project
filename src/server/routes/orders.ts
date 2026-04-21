@@ -1,13 +1,17 @@
 import { Router } from "express";
 import { dbClient } from "../../lib/supabaseServer";
+import { Resend } from "resend";
 
+const resend = new Resend(process.env.RESEND_API_KEY);
 const router = Router();
 
 router.get("/", async (req, res) => {
   try {
     const { data, error } = await dbClient
       .from("pay_orders")
-      .select(`*, pay_order_item(*, material_item(*)), signer:profiles!pay_orders_signed_fkey(name)`)
+      .select(
+        `*, pay_order_item(*, material_item(*)), signer:profiles!pay_orders_signed_fkey(name)`,
+      );
 
     if (error) throw error;
 
@@ -94,6 +98,31 @@ router.patch("/:id", async (req, res) => {
 
   if (updateError) return res.status(500).json({ error: updateError.message });
 
+  // const { data: manager } = await dbClient
+  //   .from("profiles")
+  //   .select("email")
+  //   .eq("user_id", order.created_by)
+  //   .single();
+
+  // if (manager) {
+  //   await resend.emails.send({
+  //     from: 'onboarding@resend.dev',
+  //     to: manager.email,
+  //     subject: "Order Status has been Updated",
+  //     html: `<p>Your order has been marked as <strong>${newStatus}</strong>.</p>`,
+  //   });
+  // }
+
+  // the free tier of Resend allows only for emails to be sent to the email address, 'mtomils1@umbc.edu'
+  // for testing purposes, this is all we need - however the above the code can be uncommented out if this ever becomes production level
+
+  await resend.emails.send({
+    from: "onboarding@resend.dev",
+    to: "mtomils1@umbc.edu",
+    subject: `Order, ${order.po_number}, Status has been Updated`,
+    html: `<p>Your order, <strong>${order.po_number}</strong>, has been marked as <strong>${newStatus}</strong>.<p>`,
+  });
+
   // shipped: deduct from source location (only if one exists)
   if (newStatus === "shipped" && order.source_location_id) {
     try {
@@ -109,7 +138,8 @@ router.patch("/:id", async (req, res) => {
           if (!current) return;
 
           const newQty = (current.quantity ?? 0) - (item.quantity ?? 0);
-          if (newQty < 0) throw new Error("Insufficient inventory at source location");
+          if (newQty < 0)
+            throw new Error("Insufficient inventory at source location");
 
           const { error } = await dbClient
             .from("location_item")
@@ -118,7 +148,7 @@ router.patch("/:id", async (req, res) => {
             .eq("location_id", order.source_location_id!);
 
           if (error) throw new Error(error.message);
-        })
+        }),
       );
     } catch (err: any) {
       return res.status(400).json({ error: err.message });
@@ -141,7 +171,9 @@ router.patch("/:id", async (req, res) => {
     try {
       await Promise.all(
         order.pay_order_item.map(async (item) => {
-          const received = receivedItems?.find((r: any) => r.po_item_id === item.po_item_id);
+          const received = receivedItems?.find(
+            (r: any) => r.po_item_id === item.po_item_id,
+          );
           const receivedQty = received?.received_quantity ?? item.quantity;
 
           if (receivedQty < item.quantity) hasMissing = true;
@@ -165,19 +197,26 @@ router.patch("/:id", async (req, res) => {
           const { error: upsertError } = await dbClient
             .from("location_item")
             .upsert(
-              { location_id: order.destination_location_id, item_id: item.item_id, quantity: newQty },
-              { onConflict: "location_id, item_id" }
+              {
+                location_id: order.destination_location_id,
+                item_id: item.item_id,
+                quantity: newQty,
+              },
+              { onConflict: "location_id, item_id" },
             );
 
           if (upsertError) throw new Error(upsertError.message);
-        })
+        }),
       );
     } catch (err: any) {
       return res.status(500).json({ error: err.message });
     }
 
     if (hasMissing) {
-      await dbClient.from("pay_orders").update({ has_missing_items: true }).eq("po_id", po_id);
+      await dbClient
+        .from("pay_orders")
+        .update({ has_missing_items: true })
+        .eq("po_id", po_id);
     }
   }
 
