@@ -119,7 +119,7 @@ router.patch("/:id", async (req, res) => {
   await resend.emails.send({
     from: "onboarding@resend.dev",
     to: "mtomils1@umbc.edu",
-    subject: `Order, ${order.po_number}, Status has been Updated`,
+    subject: `Order ${order.po_number}, Status has been Updated`,
     html: `<p>Your order, <strong>${order.po_number}</strong>, has been marked as <strong>${newStatus}</strong>.<p>`,
   });
 
