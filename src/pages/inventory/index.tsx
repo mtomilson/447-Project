@@ -135,13 +135,16 @@ export function Inventory() {
                   <th className="px-4 py-3 w-1/2">Material</th>
                   <th className="px-4 py-3 w-1/4">Quantity</th>
                   <th className="px-4 py-3 w-1/4">Unit</th>
+                  <th className="px-4 py-3 w-1/4">Status</th>
+
+
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
                 {selected.location_item.length === 0 ? (
                   <tr>
                     <td
-                      colSpan={3}
+                      colSpan={4}
                       className="px-4 py-4 text-gray-400 text-center"
                     >
                       No items at this location.
@@ -156,9 +159,23 @@ export function Inventory() {
                       <td className="px-4 py-3">
                         {item.material_item.item_name}
                       </td>
-                      <td className="px-4 py-3">{item.quantity ?? "—"}</td>
+                      <td className="px-4 py-3">
+                        {item.quantity ?? "—"}
+                      </td>
                       <td className="px-4 py-3">
                         {item.material_item.unit ?? "—"}
+                      </td>
+                      <td>
+                        {item.quantity !== null && item.quantity < 5 && (
+                          <span className="ml-3 inline-block px-2 py-0.5 text-xs font-semibold text-white bg-red-400 rounded-full">
+                            Low
+                          </span>
+                        )}
+                        {item.quantity !== null && item.quantity >= 5 && (
+                          <span className="ml-3 inline-block px-2 py-0.5 text-xs font-semibold text-white bg-green-400 rounded-full">
+                            Good
+                          </span>
+                        )}
                       </td>
                     </tr>
                   ))
@@ -180,13 +197,15 @@ export function Inventory() {
                   <th className="px-4 py-3 w-1/2">Location</th>
                   <th className="px-4 py-3 w-1/4">Quantity</th>
                   <th className="px-4 py-3 w-1/4">Unit</th>
+                  <th className="px-4 py-3 w-1/4">Status</th>
+
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
                 {searchResults.length === 0 ? (
                   <tr>
                     <td
-                      colSpan={3}
+                      colSpan={4}
                       className="px-4 py-4 text-gray-400 text-center"
                     >
                       No locations stock this item.
@@ -198,9 +217,25 @@ export function Inventory() {
                       key={location.location_id}
                       className="bg-white hover:bg-gray-50"
                     >
-                      <td className="px-4 py-3">{location.location_name ?? "—"}</td>
+                      <td className="px-4 py-3">
+                        {location.location_name ?? "—"}
+                      </td>
                       <td className="px-4 py-3">{li.quantity ?? "—"}</td>
-                      <td className="px-4 py-3">{li.material_item.unit ?? "—"}</td>
+                      <td className="px-4 py-3">
+                        {li.material_item.unit ?? "—"}
+                      </td>
+                      <td className="px-4 py-3">
+                        {li.quantity !== null && li.quantity < 5 && (
+                          <span className="ml-2 inline-block px-2 py-0.5 text-xs font-semibold text-white bg-red-400 rounded-full">
+                            Low
+                          </span>
+                        )}
+                        {li.quantity !== null && li.quantity >= 5 && (
+                          <span className="ml-2 inline-block px-2 py-0.5 text-xs font-semibold text-white bg-green-400 rounded-full">
+                            Good
+                          </span>
+                        )}
+                      </td>
                     </tr>
                   ))
                 )}
