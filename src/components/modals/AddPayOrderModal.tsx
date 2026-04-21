@@ -3,6 +3,7 @@ import type { Location } from "../../types/requests";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Dropdown } from "../Dropdown";
 import toast from "react-hot-toast";
+import { MaterialAutocomplete } from "../MaterialAutocomplete";
 
 type AddPayOrderModalProps = {
   onClose: () => void;
@@ -36,7 +37,10 @@ async function createPayOrder(body: {
   return data;
 }
 
-export default function AddPayOrderModal({ onClose, locations }: AddPayOrderModalProps) {
+export default function AddPayOrderModal({
+  onClose,
+  locations,
+}: AddPayOrderModalProps) {
   const [vendor, setVendor] = useState("");
   const [sourceLocationId, setSourceLocationId] = useState("");
   const [destinationLocationId, setDestinationLocationId] = useState("");
@@ -71,12 +75,19 @@ export default function AddPayOrderModal({ onClose, locations }: AddPayOrderModa
       setFormError("Please enter a unit.");
       return;
     }
-    if (cartItems.find((i) => i.item_name.toLowerCase() === itemName.toLowerCase())) {
+    if (
+      cartItems.find(
+        (i) => i.item_name.toLowerCase() === itemName.toLowerCase(),
+      )
+    ) {
       setFormError("Item already in cart.");
       return;
     }
 
-    setCartItems([...cartItems, { item_name: itemName.trim(), unit: unit.trim(), quantity }]);
+    setCartItems([
+      ...cartItems,
+      { item_name: itemName.trim(), unit: unit.trim(), quantity },
+    ]);
     setItemName("");
     setUnit("");
     setQuantity(1);
@@ -107,7 +118,10 @@ export default function AddPayOrderModal({ onClose, locations }: AddPayOrderModa
       <div className="bg-white rounded-lg shadow-lg w-full max-w-sm p-8 max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-bold text-primary">New Pay Order</h2>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-xl">
+          <button
+            onClick={onClose}
+            className="text-gray-400 hover:text-gray-600 text-xl"
+          >
             ✕
           </button>
         </div>
@@ -115,7 +129,8 @@ export default function AddPayOrderModal({ onClose, locations }: AddPayOrderModa
         <form className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Vendor <span className="text-gray-400 font-normal">(optional)</span>
+              Vendor{" "}
+              <span className="text-gray-400 font-normal">(optional)</span>
             </label>
             <input
               type="text"
@@ -128,7 +143,8 @@ export default function AddPayOrderModal({ onClose, locations }: AddPayOrderModa
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              From (Warehouse) <span className="text-gray-400 font-normal">(optional)</span>
+              From (Warehouse){" "}
+              <span className="text-gray-400 font-normal">(optional)</span>
             </label>
             <Dropdown
               options={locations.map((loc) => ({
@@ -159,7 +175,8 @@ export default function AddPayOrderModal({ onClose, locations }: AddPayOrderModa
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Notes <span className="text-gray-400 font-normal">(optional)</span>
+              Notes{" "}
+              <span className="text-gray-400 font-normal">(optional)</span>
             </label>
             <input
               type="text"
@@ -178,18 +195,28 @@ export default function AddPayOrderModal({ onClose, locations }: AddPayOrderModa
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Material Name
             </label>
-            <input
+            {/* <input
               type="text"
               value={itemName}
               onChange={(e) => setItemName(e.target.value)}
               placeholder="e.g. Concrete"
               className="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2"
+            /> */}
+            <MaterialAutocomplete
+              value={itemName}
+              onChange={setItemName}
+              onSelect={(item) => {
+                setItemName(item.item_name);
+                setUnit(item.unit ?? "");
+              }}
             />
           </div>
 
           <div className="flex gap-2">
             <div className="flex-1">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Unit</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Unit
+              </label>
               <input
                 type="text"
                 value={unit}
@@ -199,7 +226,9 @@ export default function AddPayOrderModal({ onClose, locations }: AddPayOrderModa
               />
             </div>
             <div className="flex-1">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Quantity</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Quantity
+              </label>
               <input
                 type="number"
                 min={1}
@@ -219,13 +248,13 @@ export default function AddPayOrderModal({ onClose, locations }: AddPayOrderModa
             onClick={handleAddToCart}
             className="w-full py-2 border-2 border-secondary text-secondary font-semibold rounded-md hover:bg-secondary hover:text-white transition-colors"
           >
-            + Add to Cart
+            + Add to Order
           </button>
 
           {cartItems.length > 0 && (
             <div className="border border-gray-200 rounded-md overflow-hidden">
               <p className="text-xs font-semibold text-gray-500 uppercase px-3 py-2 bg-gray-50">
-                Cart
+                Order
               </p>
               <ul className="divide-y divide-gray-100">
                 {cartItems.map((item) => (
@@ -241,7 +270,11 @@ export default function AddPayOrderModal({ onClose, locations }: AddPayOrderModa
                       <button
                         type="button"
                         onClick={() =>
-                          setCartItems(cartItems.filter((i) => i.item_name !== item.item_name))
+                          setCartItems(
+                            cartItems.filter(
+                              (i) => i.item_name !== item.item_name,
+                            ),
+                          )
                         }
                         className="text-red-400 hover:text-red-600 text-xs"
                       >

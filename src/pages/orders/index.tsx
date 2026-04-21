@@ -70,6 +70,7 @@ export default function OrdersPage() {
       queryClient.invalidateQueries({ queryKey: ["orders"] });
       queryClient.invalidateQueries({ queryKey: ["locations"] });
       toast.success("Status updated");
+      setConfirmOrder(null);
     },
     onError: (err: Error) => {
       toast.error(err.message);
@@ -281,13 +282,13 @@ export default function OrdersPage() {
         <DeliveryConfirmedModal
           order={confirmOrder}
           onClose={() => setConfirmOrder(null)}
+          isLoading={updateOrder.isPending}
           onConfirm={(receivedItems) => {
             updateOrder.mutate({
               po_id: confirmOrder.po_id,
               newStatus: "delivered",
               receivedItems,
             });
-            setConfirmOrder(null);
           }}
         />
       )}
