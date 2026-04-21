@@ -10,6 +10,7 @@ type Props = {
     value: string;
     onChange: (value: string) => void;
     onSelect?: (item: MaterialItem) => void;
+    placeholder: string;
 }
 
 async function fetchMaterials(): Promise<MaterialItem[]> {
@@ -26,7 +27,7 @@ async function fetchMaterials(): Promise<MaterialItem[]> {
   return data.data;
 }
 
-export function MaterialAutocomplete({value, onChange, onSelect}: Props) {
+export function MaterialAutocomplete({value, onChange, onSelect, placeholder}: Props) {
   const { data } = useQuery({
     queryKey: ["materials"],
     queryFn: fetchMaterials,
@@ -60,8 +61,8 @@ export function MaterialAutocomplete({value, onChange, onSelect}: Props) {
           onChange(e.target.value);
           setOpen(true);
         }}
-        placeholder="e.g. Concrete"
-        className="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2"
+        placeholder={placeholder}
+        className="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary placeholder:text-gray-400 bg-white"
       />
       {open && suggestions.length > 0 && (
         <ul className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg max-h-48 overflow-y-auto">

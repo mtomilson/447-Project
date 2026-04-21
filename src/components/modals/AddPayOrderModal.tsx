@@ -209,6 +209,7 @@ export default function AddPayOrderModal({
                 setItemName(item.item_name);
                 setUnit(item.unit ?? "");
               }}
+              placeholder="e.g. Concrete"
             />
           </div>
 
