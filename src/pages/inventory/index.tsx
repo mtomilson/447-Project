@@ -191,13 +191,13 @@ export function Inventory() {
             {selectedItem.item_name}
           </p>
           <div className="overflow-x-auto rounded-lg border border-gray-200">
-            <table className="w-full text-sm text-left table-fixed">
+            <table className="w-full text-sm text-left">
               <thead className="bg-gray-50 text-gray-600 uppercase text-xs">
                 <tr>
-                  <th className="px-4 py-3 w-1/2">Location</th>
-                  <th className="px-4 py-3 w-1/4">Quantity</th>
-                  <th className="px-4 py-3 w-1/4">Unit</th>
-                  <th className="px-4 py-3 w-1/4">Status</th>
+                  <th className="px-4 py-3">Location</th>
+                  <th className="px-4 py-3">Quantity</th>
+                  <th className="px-4 py-3">Unit</th>
+                  <th className="px-4 py-3">Status</th>
 
                 </tr>
               </thead>
