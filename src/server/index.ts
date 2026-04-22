@@ -10,6 +10,8 @@ import requestRouter from "./routes/request";
 import locationRouter from "./routes/location";
 import materialRouter from "./routes/material";
 import ordersRouter from "./routes/orders";
+import activityRouter from "./routes/activity";
+import statsRouter from "./routes/stats";
 
 import { authenticate } from "../middleware/authenticate";
 
@@ -32,7 +34,9 @@ app.use("/api/login", loginRouter);
 app.use("/api/request", authenticate, requestRouter);
 app.use("/api/location", authenticate, locationRouter);
 app.use("/api/material", authenticate, materialRouter);
-app.use("/api/orders", authenticate, ordersRouter)
+app.use("/api/orders", authenticate, ordersRouter);
+app.use("/api/activity", authenticate, activityRouter);
+app.use("/api/stats", authenticate, statsRouter);
 
 const PORT = process.env.PORT;
 
