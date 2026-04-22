@@ -1,4 +1,3 @@
-import React from "react";
 import { StatCard } from "../../../components/StatCard";
 import { useQuery } from "@tanstack/react-query";
 import type { Stats } from "../../../types/requests";
@@ -31,7 +30,7 @@ export function ManagerDashboard() {
         <StatCard
           label="Open Pay Orders"
           value={data?.openOrders ?? 0}
-          color="text-orange-500"
+          color="text-secondary"
         />
         <StatCard
           label="Low Stock Flags"
@@ -42,6 +41,11 @@ export function ManagerDashboard() {
           label="Delivered Today"
           value={data?.deliveredToday ?? 0}
           color="text-primary"
+        />
+         <StatCard
+          label="Orders with Missing Items"
+          value={data?.missingItems ?? 0}
+          color="text-orange-500"
         />
       </div>
     </div>

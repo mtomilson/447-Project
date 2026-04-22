@@ -63,4 +63,5 @@ export type Stats = {
   openOrders: number;
   deliveredToday: number;
   lowStock: number;
+  missingItems: number;
 }

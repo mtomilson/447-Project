@@ -11,14 +11,14 @@ router.get("/", async (req, res) => {
   end.setHours(23, 59, 59, 999);
 
   try {
-    const [result1, result2, result3] = await Promise.all([
+    const [result1, result2, result3, result4] = await Promise.all([
       dbClient
         .from("pay_orders")
         .select("*", { count: "exact", head: true })
         .eq("status", "created"),
       dbClient
         .from("pay_orders")
-        .select("", { count: "exact", head: true })
+        .select("*", { count: "exact", head: true })
         .eq("status", "delivered")
         .gte("created_at", start.toISOString())
         .lte("created_at", end.toISOString()),
@@ -26,15 +26,20 @@ router.get("/", async (req, res) => {
         .from("location_item")
         .select("*", { count: "exact", head: true })
         .lt("quantity", 5),
+      dbClient
+        .from("pay_orders")
+        .select("*", { count: "exact", head: true })
+        .eq("has_missing_items", true),
     ]);
 
     const { count: openOrders, error: e1 } = result1;
     const { count: deliveredToday, error: e2 } = result2;
     const { count: lowStock, error: e3 } = result3;
+    const { count: missingItems, error: e4 } = result4;
 
-    if (e1 || e2 || e3) throw new Error("Failed to Fetch Stats!");
+    if (e1 || e2 || e3 || e4) throw new Error("Failed to Fetch Stats!");
 
-    return res.json({ openOrders, deliveredToday, lowStock });
+    return res.json({ openOrders, deliveredToday, lowStock, missingItems });
   } catch (error: any) {
     return res.status(500).json({ error: error.message });
   }
