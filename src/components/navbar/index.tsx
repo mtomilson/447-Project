@@ -13,6 +13,7 @@ const navConfig: Record<string, NavItem[]> = {
     { label: "Pay Orders", path: "/orders" }
   ],
   warehouse_logistic: [
+    { label: "Home", path: "/dashboard/warehouse" },
     { label: "Inventory", path: "/inventory" },
     { label: "Pay Orders", path: "/orders" }
 
