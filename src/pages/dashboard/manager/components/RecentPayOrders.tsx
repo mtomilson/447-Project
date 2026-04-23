@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import type { PayOrder } from "../../../../types/typedefs";
+import { Link } from "react-router-dom";
 
 async function fetchRecentOrders(): Promise<PayOrder[]> {
   const token = localStorage.getItem("token");
@@ -16,20 +17,21 @@ async function fetchRecentOrders(): Promise<PayOrder[]> {
 }
 
 export function RecentPayOrders() {
-  const {data, isLoading} = useQuery({
+  const { data, isLoading } = useQuery({
     queryKey: ["orders", "recent"],
-    queryFn: fetchRecentOrders
+    queryFn: fetchRecentOrders,
   });
-
-
-
 
   function getStatusColor(status: string) {
     switch (status) {
-      case "created": return "bg-yellow-100 text-yellow-800";
-      case "shipped": return "bg-purple-100 text-purple-800";
-      case "delivered": return "bg-blue-100 text-blue-800";
-      default: return "bg-gray-100 text-gray-800";
+      case "created":
+        return "bg-yellow-100 text-yellow-800";
+      case "shipped":
+        return "bg-purple-100 text-purple-800";
+      case "delivered":
+        return "bg-blue-100 text-blue-800";
+      default:
+        return "bg-gray-100 text-gray-800";
     }
   }
 
@@ -37,7 +39,9 @@ export function RecentPayOrders() {
     <div className="mb-8">
       <div className="flex items-center justify-between mb-3">
         <h2 className="text-lg font-bold text-primary">Recent Pay Orders</h2>
-        <a href="/orders" className="text-sm text-secondary hover:underline">View all</a>
+        <Link to="/orders" className="text-sm text-secondary hover:underline">
+          View all
+        </Link>
       </div>
 
       {isLoading ? (
@@ -47,19 +51,31 @@ export function RecentPayOrders() {
       ) : (
         <div className="space-y-3">
           {data.map((order) => (
-            <div key={order.po_id} className="bg-white rounded-lg shadow p-4 border-l-4 border-l-primary">
+            <div
+              key={order.po_id}
+              className="bg-white rounded-lg shadow p-4 border-l-4 border-l-primary"
+            >
               <div className="flex items-center justify-between mb-2">
-                <span className="font-bold text-primary">{order.po_number}</span>
-                <span className={`text-xs font-semibold px-2 py-1 rounded-full ${getStatusColor(order.status)}`}>
+                <span className="font-bold text-primary">
+                  {order.po_number}
+                </span>
+                <span
+                  className={`text-xs font-semibold px-2 py-1 rounded-full ${getStatusColor(order.status)}`}
+                >
                   {order.status}
                 </span>
               </div>
               <div className="text-sm text-gray-700 space-y-1">
                 {order.pay_order_item.map((item, i) => (
-                  <p key={i}>{item.material_item.item_name} — {item.quantity} {item.material_item.unit ?? ""}</p>
+                  <p key={i}>
+                    {item.material_item.item_name} — {item.quantity}{" "}
+                    {item.material_item.unit ?? ""}
+                  </p>
                 ))}
               </div>
-              <p className="text-xs text-gray-400 mt-2">{new Date(order.created_at).toLocaleDateString()}</p>
+              <p className="text-xs text-gray-400 mt-2">
+                {new Date(order.created_at).toLocaleDateString()}
+              </p>
             </div>
           ))}
         </div>

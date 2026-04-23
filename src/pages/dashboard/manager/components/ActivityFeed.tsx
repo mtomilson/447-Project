@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import type { ActivityLog } from "../../../../types/typedefs";
+import { Link } from "react-router-dom"
 
 async function fetchActivityLog(): Promise<ActivityLog[]> {
   const token = localStorage.getItem("token");
@@ -22,7 +23,7 @@ export function ActivityFeed() {
      <div className="mb-8">
       <div className="flex items-center justify-between mb-3">
         <h2 className="text-lg font-bold text-primary">Activity Feed</h2>
-        <a href="/orders" className="text-sm text-secondary hover:underline">View all</a>
+        <Link to="/orders" className="text-sm text-secondary hover:underline">View all</Link>
       </div>
 
       {isLoading ? (
