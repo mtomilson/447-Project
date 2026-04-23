@@ -12,6 +12,7 @@ import OrdersPage from "./pages/orders";
 import { Inventory } from "./pages/inventory/index";
 import { Layout } from "./components/Layout";
 import { Toaster } from "react-hot-toast";
+import { ActivityFeedPage } from "./pages/activityfeed";
 
 function App() {
   return (
@@ -46,6 +47,11 @@ function App() {
           <Route element={<ProtectedRoute />}>
             <Route path="/inventory" element={<Inventory />} />
           </Route>
+
+          <Route element={<ProtectedRoute/>}>
+            <Route path="/feed" element={<ActivityFeedPage/>} />
+          </Route>
+
         </Routes>
         </div>
       </BrowserRouter>

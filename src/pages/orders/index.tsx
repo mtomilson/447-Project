@@ -3,49 +3,12 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import AddPayOrderModal from "../../components/modals/AddPayOrderModal";
 import { useAuth } from "../../context/AuthContext";
 import { Dropdown } from "../../components/Dropdown";
-import type { Location, PayOrder } from "../../types/typedefs";
+import type { PayOrder } from "../../types/typedefs";
 import toast from "react-hot-toast";
 import DeliveryConfirmedModal from "../../components/modals/DeliveryConfirmedModal";
-
-async function fetchLocations(): Promise<Location[]> {
-  const token = localStorage.getItem("token");
-  const res = await fetch(`${import.meta.env.VITE_API_URL}/api/location`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
-  const data = await res.json();
-  return data.data;
-}
-
-async function fetchOrders(): Promise<PayOrder[]> {
-  const token = localStorage.getItem("token");
-  const res = await fetch(`${import.meta.env.VITE_API_URL}/api/orders`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
-  const data = await res.json();
-  return data.data;
-}
-
-async function updateStatus(
-  po_id: string,
-  newStatus: string,
-  receivedItems?: { po_item_id: string; received_quantity: number }[],
-) {
-  const token = localStorage.getItem("token");
-  const res = await fetch(
-    `${import.meta.env.VITE_API_URL}/api/orders/${po_id}`,
-    {
-      method: "PATCH",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ newStatus, receivedItems }),
-    },
-  );
-  const data = await res.json();
-  if (!res.ok) throw new Error(data.error);
-  return data;
-}
+import { fetchLocations } from "../../lib/tanstack/locations"
+import { fetchOrders } from "../../lib/tanstack/orders";
+import { updateStatus } from "../../lib/tanstack/orders";
 
 export default function OrdersPage() {
   const [showModal, setShowModal] = useState<boolean>(false);

@@ -1,20 +1,9 @@
 import { StatCard } from "../../../components/StatCard";
 import { useQuery } from "@tanstack/react-query";
-import type { Stats } from "../../../types/typedefs";
 import { useAuth } from "../../../context/AuthContext";
 import { RecentPayOrders } from "./components/RecentPayOrders";
 import { ActivityFeed } from "./components/ActivityFeed";
-
-async function fetchStats(): Promise<Stats> {
-  const token = localStorage.getItem("token");
-  const res = await fetch(`${import.meta.env.VITE_API_URL}/api/stats`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-  const data = await res.json();
-  return data;
-}
+import { fetchStats } from "../../../lib/tanstack/stats";
 
 export function ManagerDashboard() {
   const user = useAuth();

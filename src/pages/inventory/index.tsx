@@ -4,36 +4,8 @@ import { useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { AddLocationModal } from "../../components/modals/AddLocationModal";
 import { MaterialAutocomplete } from "../../components/MaterialAutocomplete";
-
-type MaterialItem = {
-  item_id: string;
-  item_name: string;
-  unit: string | null;
-};
-
-type LocationItem = {
-  item_id: string;
-  quantity: number | null;
-  material_item: MaterialItem;
-};
-
-type Location = {
-  location_id: string;
-  location_name: string | null;
-  address: string | null;
-  is_active: boolean | null;
-  location_item: LocationItem[];
-};
-
-async function fetchLocations(): Promise<Location[]> {
-  const token = localStorage.getItem("token");
-  const res = await fetch(`${import.meta.env.VITE_API_URL}/api/location`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
-  const data = await res.json();
-  if (!res.ok) throw new Error(data.error);
-  return data.data;
-}
+import { fetchLocations } from "../../lib/tanstack/locations";
+import type { MaterialItem } from "../../types/typedefs";
 
 export function Inventory() {
   const {
