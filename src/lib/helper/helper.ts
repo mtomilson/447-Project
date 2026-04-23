@@ -1,4 +1,4 @@
-import { dbClient, authClient } from "../supabaseServer";
+import { dbClient, authClient } from "../supabase/supabaseServer";
 
 export async function authenticateUser(email: string, password: string) {
   // first authenticate the user

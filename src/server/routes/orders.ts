@@ -1,10 +1,10 @@
 import { Router } from "express";
-import { dbClient } from "../../lib/supabaseServer";
+import { dbClient } from "../../lib/supabase/supabaseServer";
 import { Resend } from "resend";
 import { logActivity } from "../helper/logActivity";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
-const router = Router();
+const router = Router();3
 
 router.get("/", async (req, res) => {
   const limit = req.query.limit
@@ -139,7 +139,7 @@ router.patch("/:id", async (req, res) => {
   if (newStatus === "shipped" && order.source_location_id) {
     try {
       await Promise.all(
-        order.pay_order_item.map(async (item) => {
+        order.pay_order_item.map(async (item: any) => {
           const { data: current } = await dbClient
             .from("location_item")
             .select("quantity")
@@ -183,7 +183,7 @@ router.patch("/:id", async (req, res) => {
 
     try {
       await Promise.all(
-        order.pay_order_item.map(async (item) => {
+        order.pay_order_item.map(async (item: any) => {
           const received = receivedItems?.find(
             (r: any) => r.po_item_id === item.po_item_id,
           );
