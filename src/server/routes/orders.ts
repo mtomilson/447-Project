@@ -30,7 +30,7 @@ router.get("/", async (req, res) => {
 });
 
 router.post("/create", async (req, res) => {
-  const { vendor, source_location_id, destination_location_id, notes, items } =
+  const { vendor, po_number, source_location_id, destination_location_id, notes, items } =
     req.body;
   const created_by = req.user!.user_id;
 
@@ -44,6 +44,7 @@ router.post("/create", async (req, res) => {
     .from("pay_orders")
     .insert({
       vendor,
+      po_number,
       source_location_id,
       destination_location_id,
       notes,
@@ -55,7 +56,6 @@ router.post("/create", async (req, res) => {
   if (error) return res.status(500).json({ error: error.message });
 
   const po_id = data.po_id;
-  const po_number = data.po_number;
 
   for (const item of items) {
     const { data: existing } = await dbClient
