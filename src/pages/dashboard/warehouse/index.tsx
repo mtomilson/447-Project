@@ -203,7 +203,7 @@ export function WarehouseDashboard() {
               View all
             </Link>
           </div>
-          <div className="bg-white rounded-lg shadow p-4 text-sm text-gray-400">
+          <div className="text-sm text-gray-400">
             No deliveries logged yet.
           </div>
         </div>
