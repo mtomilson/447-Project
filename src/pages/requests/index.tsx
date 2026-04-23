@@ -4,7 +4,7 @@ import AddRequestModal from "../../components/modals/AddRequestModal";
 import { useAuth } from "../../context/AuthContext";
 import { Dropdown } from "../../components/Dropdown";
 
-import type { Location, Request, Status } from "../../types/requests";
+import type { Location, Request, Status } from "../../types/typedefs";
 import toast from "react-hot-toast";
 
 // Tanstack Query Functions

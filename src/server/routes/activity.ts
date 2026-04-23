@@ -9,7 +9,7 @@ router.get("/", async (req, res) => {
       .from("activity_log")
       .select(
         "log_id, actor_id, event_type, description, po_id, created_at, actor:profiles(name)",
-      ).order("created_at", {ascending: false}).limit(20);
+      ).order("created_at", {ascending: false}).limit(3);
     if (error) {
       throw error;
     }

@@ -15,7 +15,7 @@ router.get("/", async (req, res) => {
       dbClient
         .from("pay_orders")
         .select("*", { count: "exact", head: true })
-        .eq("status", "created"),
+        .or("status.eq.created, status.eq.shipped"),
       dbClient
         .from("pay_orders")
         .select("*", { count: "exact", head: true })

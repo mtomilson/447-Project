@@ -21,6 +21,7 @@ const navConfig: Record<string, NavItem[]> = {
     { label: "Home", path: "/dashboard/manager"},
     { label: "Inventory", path: "/inventory" },
     { label: "Pay Orders", path: "/orders" }
+    
 
   ],
   system_administrator: [

@@ -65,3 +65,12 @@ export type Stats = {
   lowStock: number;
   missingItems: number;
 }
+
+export type ActivityLog = {
+  log_id: string;
+  actor_id: string;
+  event_type: EventType;
+  description: string;
+  po_id: string;
+  created_at: string;
+}

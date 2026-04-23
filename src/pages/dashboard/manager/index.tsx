@@ -1,6 +1,9 @@
 import { StatCard } from "../../../components/StatCard";
 import { useQuery } from "@tanstack/react-query";
-import type { Stats } from "../../../types/requests";
+import type { Stats } from "../../../types/typedefs";
+import { useAuth } from "../../../context/AuthContext";
+import { RecentPayOrders } from "./components/RecentPayOrders";
+import { ActivityFeed } from "./components/ActivityFeed";
 
 async function fetchStats(): Promise<Stats> {
   const token = localStorage.getItem("token");
@@ -14,6 +17,7 @@ async function fetchStats(): Promise<Stats> {
 }
 
 export function ManagerDashboard() {
+  const user = useAuth();
   const { data, error, isLoading } = useQuery({
     queryKey: ["stats"],
     queryFn: fetchStats,
@@ -47,6 +51,10 @@ export function ManagerDashboard() {
           value={data?.missingItems ?? 0}
           color="text-orange-500"
         />
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <RecentPayOrders/>
+        <ActivityFeed/>
       </div>
     </div>
   );
