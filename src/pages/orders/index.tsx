@@ -67,8 +67,11 @@ export default function OrdersPage() {
       receivedItems?: { po_item_id: string; received_quantity: number }[];
     }) => updateStatus(po_id, newStatus, receivedItems),
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["orders", "recent"] });
       queryClient.invalidateQueries({ queryKey: ["orders"] });
       queryClient.invalidateQueries({ queryKey: ["locations"] });
+      queryClient.invalidateQueries({ queryKey: ["activity"] });
+      queryClient.invalidateQueries({queryKey: ["stats"]});
       toast.success("Status updated");
       setConfirmOrder(null);
     },

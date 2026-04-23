@@ -56,6 +56,9 @@ export default function AddPayOrderModal({
     mutationFn: createPayOrder,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["orders"] });
+      queryClient.invalidateQueries({queryKey: ["orders", "recent"]})
+      queryClient.invalidateQueries({queryKey: ["activity"]})
+      queryClient.invalidateQueries({ queryKey: ["stats"] });
       toast.success("Pay order created!");
       onClose();
     },
