@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import AddPayOrderModal from "../../components/modals/AddPayOrderModal";
 import { useAuth } from "../../context/AuthContext";
 import { Dropdown } from "../../components/Dropdown";
-import type { Location, PayOrder } from "../../types/requests";
+import type { Location, PayOrder } from "../../types/typedefs";
 import toast from "react-hot-toast";
 import DeliveryConfirmedModal from "../../components/modals/DeliveryConfirmedModal";
 

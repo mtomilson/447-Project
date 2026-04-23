@@ -1,18 +1,26 @@
 import { Router } from "express";
 import { dbClient } from "../../lib/supabaseServer";
 import { Resend } from "resend";
+import { logActivity } from "../helper/logActivity";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 const router = Router();
 
 router.get("/", async (req, res) => {
+  const limit = req.query.limit
+    ? parseInt(req.query.limit as string)
+    : undefined;
+
   try {
-    const { data, error } = await dbClient
+    let query = dbClient
       .from("pay_orders")
       .select(
         `*, pay_order_item(*, material_item(*)), signer:profiles!pay_orders_signed_fkey(name)`,
-      );
+      )
+      .order("created_at", { ascending: false });
 
+    if (limit) query = query.limit(limit);
+    const { data, error } = await query;
     if (error) throw error;
 
     return res.json({ data });
@@ -47,6 +55,7 @@ router.post("/create", async (req, res) => {
   if (error) return res.status(500).json({ error: error.message });
 
   const po_id = data.po_id;
+  const po_number = data.po_number;
 
   for (const item of items) {
     const { data: existing } = await dbClient
@@ -73,12 +82,15 @@ router.post("/create", async (req, res) => {
       return res.status(500).json({ error: poItemError.message });
   }
 
+  await logActivity(created_by, "order_created", po_id, po_number);
+
   return res.status(201).json({ message: "success" });
 });
 
 router.patch("/:id", async (req, res) => {
   const { newStatus } = req.body;
   const po_id = req.params.id;
+  const user = req.user!.user_id;
 
   // fetch the pay order and its items
   const { data: order, error: fetchError } = await dbClient
@@ -153,6 +165,7 @@ router.patch("/:id", async (req, res) => {
     } catch (err: any) {
       return res.status(400).json({ error: err.message });
     }
+    await logActivity(user, "order_shipped", po_id, order.po_number);
   }
 
   // delivered: record signer, update received quantities, add to destination inventory
@@ -218,6 +231,7 @@ router.patch("/:id", async (req, res) => {
         .update({ has_missing_items: true })
         .eq("po_id", po_id);
     }
+    await logActivity(user, "order_delivered", po_id, order.po_number);
   }
 
   return res.json({ message: "success" });

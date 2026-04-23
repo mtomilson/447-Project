@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type { Location } from "../../types/requests";
+import type { Location } from "../../types/typedefs";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Dropdown } from "../Dropdown";
 import toast from "react-hot-toast";

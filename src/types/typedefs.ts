@@ -56,3 +56,21 @@ export type PayOrder = {
   signer: { name: string } | null;
   has_missing_items: boolean;
 };
+
+export type EventType = 'order_created' | 'order_shipped' | 'order_delivered';
+
+export type Stats = {
+  openOrders: number;
+  deliveredToday: number;
+  lowStock: number;
+  missingItems: number;
+}
+
+export type ActivityLog = {
+  log_id: string;
+  actor_id: string;
+  event_type: EventType;
+  description: string;
+  po_id: string;
+  created_at: string;
+}

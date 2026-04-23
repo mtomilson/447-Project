@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type { PayOrder } from "../../types/requests";
+import type { PayOrder } from "../../types/typedefs";
 
 type Props = {
   order: PayOrder;
