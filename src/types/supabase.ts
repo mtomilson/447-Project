@@ -246,11 +246,13 @@ export type Database = {
         Row: {
           created_at: string
           created_by: string
+          delivered_at: string | null
           destination_location_id: string
           has_missing_items: boolean | null
           notes: string | null
           po_id: string
           po_number: string
+          shipped_at: string | null
           signed: string | null
           source_location_id: string | null
           status: string
@@ -259,11 +261,13 @@ export type Database = {
         Insert: {
           created_at?: string
           created_by: string
+          delivered_at?: string | null
           destination_location_id: string
           has_missing_items?: boolean | null
           notes?: string | null
           po_id?: string
           po_number?: string
+          shipped_at?: string | null
           signed?: string | null
           source_location_id?: string | null
           status?: string
@@ -272,11 +276,13 @@ export type Database = {
         Update: {
           created_at?: string
           created_by?: string
+          delivered_at?: string | null
           destination_location_id?: string
           has_missing_items?: boolean | null
           notes?: string | null
           po_id?: string
           po_number?: string
+          shipped_at?: string | null
           signed?: string | null
           source_location_id?: string | null
           status?: string

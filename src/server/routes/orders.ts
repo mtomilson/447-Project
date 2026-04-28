@@ -30,7 +30,7 @@ router.get("/", async (req, res) => {
 });
 
 router.post("/create", async (req, res) => {
-  const { vendor, po_number, source_location_id, destination_location_id, notes, items } =
+  const { vendor, po_number, source_location_id, destination_location_id, notes, items, expectedDelivery } =
     req.body;
   const created_by = req.user!.user_id;
 
@@ -49,6 +49,7 @@ router.post("/create", async (req, res) => {
       destination_location_id,
       notes,
       created_by,
+      expected_delivery: expectedDelivery
     })
     .select()
     .single();
