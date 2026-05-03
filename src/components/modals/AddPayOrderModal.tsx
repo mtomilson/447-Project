@@ -20,8 +20,10 @@ async function createPayOrder(body: {
   vendor: string;
   source_location_id: string | null;
   destination_location_id: string;
+  po_number: string;
   notes: string;
   items: CartItem[];
+  expectedDelivery: string;
 }) {
   const token = localStorage.getItem("token");
   const res = await fetch(`${import.meta.env.VITE_API_URL}/api/orders/create`, {
@@ -42,11 +44,13 @@ export default function AddPayOrderModal({
   locations,
 }: AddPayOrderModalProps) {
   const [vendor, setVendor] = useState("");
+  const [po_number, setPoNumber] = useState("");
   const [sourceLocationId, setSourceLocationId] = useState("");
   const [destinationLocationId, setDestinationLocationId] = useState("");
   const [notes, setNotes] = useState("");
   const [itemName, setItemName] = useState("");
   const [unit, setUnit] = useState("");
+  const [expectedDelivery, setExepectedDelivery] = useState("");
   const [quantity, setQuantity] = useState<number>(1);
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [formError, setFormError] = useState("");
@@ -56,8 +60,8 @@ export default function AddPayOrderModal({
     mutationFn: createPayOrder,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["orders"] });
-      queryClient.invalidateQueries({queryKey: ["orders", "recent"]})
-      queryClient.invalidateQueries({queryKey: ["activity"]})
+      queryClient.invalidateQueries({ queryKey: ["orders", "recent"] });
+      queryClient.invalidateQueries({ queryKey: ["activity"] });
       queryClient.invalidateQueries({ queryKey: ["stats"] });
       toast.success("Pay order created!");
       onClose();
@@ -106,13 +110,19 @@ export default function AddPayOrderModal({
       setFormError("Please add at least one item.");
       return;
     }
+    if (!po_number) {
+      setFormError("Please Enter a PO Number.");
+      return;
+    }
 
     addOrder.mutate({
       vendor,
+      po_number,
       source_location_id: sourceLocationId || null,
       destination_location_id: destinationLocationId,
       notes,
       items: cartItems,
+      expectedDelivery
     });
   }
 
@@ -141,6 +151,19 @@ export default function AddPayOrderModal({
               onChange={(e) => setVendor(e.target.value)}
               placeholder="e.g. Home Depot"
               className="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              PO Number{" "}
+            </label>
+            <input
+              type="text"
+              value={po_number}
+              onChange={(e) => setPoNumber(e.target.value)}
+              placeholder="e.g. PO-11234"
+              className="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2"
+              required
             />
           </div>
 
@@ -175,6 +198,19 @@ export default function AddPayOrderModal({
               required
             />
           </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Expected Delivery{" "}
+              <span className="text-gray-400 font-normal">(optional)</span>
+            </label>
+            <input
+              type="date"
+              value={expectedDelivery}
+              onChange={(e) => setExepectedDelivery(e.target.value)}
+              placeholder="Select Expected Delivery Date"
+              className="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2"
+            />
+          </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -198,13 +234,6 @@ export default function AddPayOrderModal({
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Material Name
             </label>
-            {/* <input
-              type="text"
-              value={itemName}
-              onChange={(e) => setItemName(e.target.value)}
-              placeholder="e.g. Concrete"
-              className="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2"
-            /> */}
             <MaterialAutocomplete
               value={itemName}
               onChange={setItemName}

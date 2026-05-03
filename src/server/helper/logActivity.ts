@@ -1,4 +1,4 @@
-import { dbClient } from "../../lib/supabaseServer";
+import { dbClient } from "../../lib/supabase/supabaseServer";
 import type { EventType } from "../../types/typedefs";
 
 // helper function that logs activity to the activity_log table - used for creating the recent activity on dashboard

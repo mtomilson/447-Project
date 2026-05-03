@@ -22,8 +22,12 @@ export type Location = {
   location_name: string | null;
   location_item: {
     item_id: string;
-    material_item: { item_name: string; unit: string };
+    quantity: number | null;
+    material_item: { item_name: string; unit: string | null };
   }[];
+  address: string | null;
+  is_active: boolean | null;
+
 };
 
 export type Status = "requested" | "approved" | "denied" | "shipped" | "delivered";
@@ -55,6 +59,7 @@ export type PayOrder = {
   signed: string | null;
   signer: { name: string } | null;
   has_missing_items: boolean;
+  expected_delivery: string;
 };
 
 export type EventType = 'order_created' | 'order_shipped' | 'order_delivered';
@@ -62,7 +67,7 @@ export type EventType = 'order_created' | 'order_shipped' | 'order_delivered';
 export type Stats = {
   openOrders: number;
   deliveredToday: number;
-  lowStock: number;
+  expectedDeliveries: number;
   missingItems: number;
 }
 
@@ -74,3 +79,9 @@ export type ActivityLog = {
   po_id: string;
   created_at: string;
 }
+
+export type MaterialItem = {
+  item_id: string;
+  item_name: string;
+  unit: string | null;
+};

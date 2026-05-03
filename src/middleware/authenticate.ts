@@ -1,5 +1,5 @@
 import express from "express"
-import { authClient } from "../lib/supabaseServer"
+import { authClient } from "../lib/supabase/supabaseServer"
 import { getUserProfile } from "../lib/helper/helper";
 
 export async function authenticate(

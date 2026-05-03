@@ -1,17 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
-import type { ActivityLog } from "../../../../types/typedefs";
 import { Link } from "react-router-dom"
-
-async function fetchActivityLog(): Promise<ActivityLog[]> {
-  const token = localStorage.getItem("token");
-  const res = await fetch(`${import.meta.env.VITE_API_URL}/api/activity`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-  const data = await res.json();
-  return data.data;
-}
+import { fetchActivityLog } from "../../../../lib/tanstack/activity";
 
 export function ActivityFeed() {
   const { data, isLoading } = useQuery({
@@ -23,7 +12,7 @@ export function ActivityFeed() {
      <div className="mb-8">
       <div className="flex items-center justify-between mb-3">
         <h2 className="text-lg font-bold text-primary">Activity Feed</h2>
-        <Link to="/orders" className="text-sm text-secondary hover:underline">View all</Link>
+        <Link to="/feed" className="text-sm text-secondary hover:underline">View all</Link>
       </div>
 
       {isLoading ? (

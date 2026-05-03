@@ -1,45 +1,11 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "../../../context/AuthContext";
-import type { Location, PayOrder } from "../../../types/typedefs";
 import toast from "react-hot-toast";
 import { StatCard } from "../../../components/StatCard";
 import { Link } from "react-router-dom";
-
-async function fetchLocations(): Promise<Location[]> {
-  const token = localStorage.getItem("token");
-  const res = await fetch(`${import.meta.env.VITE_API_URL}/api/location`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
-  const data = await res.json();
-  return data.data;
-}
-
-async function fetchOrders(): Promise<PayOrder[]> {
-  const token = localStorage.getItem("token");
-  const res = await fetch(`${import.meta.env.VITE_API_URL}/api/orders`, {
-    headers: { Authorization: `Bearer ${token}` },
-  });
-  const data = await res.json();
-  return data.data;
-}
-
-async function updateStatus(po_id: string, newStatus: string) {
-  const token = localStorage.getItem("token");
-  const res = await fetch(
-    `${import.meta.env.VITE_API_URL}/api/orders/${po_id}`,
-    {
-      method: "PATCH",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ newStatus }),
-    },
-  );
-  const data = await res.json();
-  if (!res.ok) throw new Error(data.error);
-  return data;
-}
+import { fetchLocations } from "../../../lib/tanstack/locations";
+import { fetchOrders } from "../../../lib/tanstack/orders";
+import { updateStatus } from "../../../lib/tanstack/orders";
 
 export function WarehouseDashboard() {
   const { user } = useAuth();
@@ -203,9 +169,7 @@ export function WarehouseDashboard() {
               View all
             </Link>
           </div>
-          <div className="text-sm text-gray-400">
-            No deliveries logged yet.
-          </div>
+          <div className="text-sm text-gray-400">No deliveries logged yet.</div>
         </div>
       </div>
     </div>

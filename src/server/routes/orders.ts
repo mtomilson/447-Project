@@ -1,10 +1,10 @@
 import { Router } from "express";
-import { dbClient } from "../../lib/supabaseServer";
+import { dbClient } from "../../lib/supabase/supabaseServer";
 import { Resend } from "resend";
 import { logActivity } from "../helper/logActivity";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
-const router = Router();
+const router = Router();3
 
 router.get("/", async (req, res) => {
   const limit = req.query.limit
@@ -30,7 +30,7 @@ router.get("/", async (req, res) => {
 });
 
 router.post("/create", async (req, res) => {
-  const { vendor, source_location_id, destination_location_id, notes, items } =
+  const { vendor, po_number, source_location_id, destination_location_id, notes, items, expectedDelivery } =
     req.body;
   const created_by = req.user!.user_id;
 
@@ -44,10 +44,12 @@ router.post("/create", async (req, res) => {
     .from("pay_orders")
     .insert({
       vendor,
+      po_number,
       source_location_id,
       destination_location_id,
       notes,
       created_by,
+      expected_delivery: expectedDelivery
     })
     .select()
     .single();
@@ -55,7 +57,6 @@ router.post("/create", async (req, res) => {
   if (error) return res.status(500).json({ error: error.message });
 
   const po_id = data.po_id;
-  const po_number = data.po_number;
 
   for (const item of items) {
     const { data: existing } = await dbClient
@@ -139,7 +140,7 @@ router.patch("/:id", async (req, res) => {
   if (newStatus === "shipped" && order.source_location_id) {
     try {
       await Promise.all(
-        order.pay_order_item.map(async (item) => {
+        order.pay_order_item.map(async (item: any) => {
           const { data: current } = await dbClient
             .from("location_item")
             .select("quantity")
@@ -183,7 +184,7 @@ router.patch("/:id", async (req, res) => {
 
     try {
       await Promise.all(
-        order.pay_order_item.map(async (item) => {
+        order.pay_order_item.map(async (item: any) => {
           const received = receivedItems?.find(
             (r: any) => r.po_item_id === item.po_item_id,
           );
