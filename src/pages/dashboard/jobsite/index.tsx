@@ -10,7 +10,6 @@ import { IncomingOrders } from "./components/IncomingOrders";
 import { InventorySnapshot } from "./components/InventorySnapshot";
 import { ActivityFeed } from "../manager/components/ActivityFeed";
 
-
 export function JobsiteDashboard() {
   const { user } = useAuth();
   const [homeJobsiteId, setHomeJobsiteId] = useState<string | null>(() => {
@@ -26,14 +25,19 @@ export function JobsiteDashboard() {
     return null;
   });
 
-  const { data: orders } = useQuery({ queryKey: ["orders"], queryFn: fetchOrders });
+  const { data: orders } = useQuery({
+    queryKey: ["orders"],
+    queryFn: fetchOrders,
+  });
   const { data: locations } = useQuery({
     queryKey: ["locations"],
     queryFn: fetchLocations,
   });
 
   if (!homeJobsiteId) {
-    return <JobsitePicker locations={locations ?? []} onSave={setHomeJobsiteId} />;
+    return (
+      <JobsitePicker locations={locations ?? []} onSave={setHomeJobsiteId} />
+    );
   }
 
   const homeLocation = locations?.find((l) => l.location_id === homeJobsiteId);
@@ -46,11 +50,25 @@ export function JobsiteDashboard() {
           (o.status === "created" && o.source_location_id === null)),
     ) ?? [];
 
-  const today = new Date().toISOString().split("T")[0];
+  const today = new Date().toLocaleDateString("en-CA");
+  console.log("homeJobsiteId:", JSON.stringify(homeJobsiteId));
+  console.log("today:", today);
+  orders?.forEach((o) => {
+    if (o.destination_location_id === homeJobsiteId) {
+      console.log(
+        "match:",
+        o.po_number,
+        "expected_delivery:",
+        JSON.stringify(o.expected_delivery),
+      );
+    }
+  });
+
   const expectedToday =
     orders?.filter(
       (o) =>
-        o.destination_location_id === homeJobsiteId && o.expected_delivery === today,
+        o.destination_location_id === homeJobsiteId &&
+        o.expected_delivery?.startsWith(today),
     ).length ?? 0;
 
   const thisMonth = new Date().toISOString().slice(0, 7);

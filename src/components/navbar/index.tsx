@@ -9,6 +9,7 @@ type NavItem = {
 // Add or remove links per role here
 const navConfig: Record<string, NavItem[]> = {
   jobsite_logistic: [
+    { label: "Home", path: "/dashboard/jobsite"},
     { label: "Inventory", path: "/inventory" },
     { label: "Pay Orders", path: "/orders" }
   ],
