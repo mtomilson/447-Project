@@ -60,6 +60,10 @@ export type PayOrder = {
   signer: { name: string } | null;
   has_missing_items: boolean;
   expected_delivery: string;
+  order_photos: {
+    storage_path: string;
+    event_context: string;
+  }[];
 };
 
 export type EventType = 'order_created' | 'order_shipped' | 'order_delivered';

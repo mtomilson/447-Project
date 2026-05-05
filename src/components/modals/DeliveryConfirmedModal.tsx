@@ -1,5 +1,6 @@
 import { useState } from "react";
 import type { PayOrder } from "../../types/typedefs";
+import { PhotoCapture } from "../PhotoCapture";
 
 type Props = {
   order: PayOrder;
@@ -7,6 +8,7 @@ type Props = {
   isLoading?: boolean;
   onConfirm: (
     receivedItems: { po_item_id: string; received_quantity: number }[],
+    files: File[],
   ) => void;
 };
 
@@ -22,12 +24,14 @@ export default function DeliveryConfirmedModal({
     ),
   );
 
+  const [photos, setPhotos] = useState<File[]>([]);
+
   function handleSubmit() {
     const receivedItems = order.pay_order_item.map((item) => ({
       po_item_id: item.po_item_id,
       received_quantity: received[item.po_item_id] ?? item.quantity,
     }));
-    onConfirm(receivedItems);
+    onConfirm(receivedItems, photos);
   }
 
   return (
@@ -35,17 +39,31 @@ export default function DeliveryConfirmedModal({
       <div className="bg-white rounded-lg shadow-lg w-full max-w-sm p-8">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-bold text-primary">Confirm Delivery</h2>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-xl">✕</button>
+          <button
+            onClick={onClose}
+            className="text-gray-400 hover:text-gray-600 text-xl"
+          >
+            ✕
+          </button>
         </div>
 
-        <p className="text-sm text-gray-500 mb-4">Enter the quantity actually received for each item.</p>
+        <p className="text-sm text-gray-500 mb-4">
+          Enter the quantity actually received for each item.
+        </p>
 
         <div className="space-y-3 mb-6">
           {order.pay_order_item.map((item) => (
-            <div key={item.po_item_id} className="flex items-center justify-between gap-4">
+            <div
+              key={item.po_item_id}
+              className="flex items-center justify-between gap-4"
+            >
               <div className="flex-1">
-                <p className="text-sm font-medium text-gray-700">{item.material_item.item_name}</p>
-                <p className="text-xs text-gray-400">Expected: {item.quantity} {item.material_item.unit ?? ""}</p>
+                <p className="text-sm font-medium text-gray-700">
+                  {item.material_item.item_name}
+                </p>
+                <p className="text-xs text-gray-400">
+                  Expected: {item.quantity} {item.material_item.unit ?? ""}
+                </p>
               </div>
               <input
                 type="number"
@@ -53,7 +71,10 @@ export default function DeliveryConfirmedModal({
                 max={item.quantity}
                 value={received[item.po_item_id] ?? item.quantity}
                 onChange={(e) =>
-                  setReceived({ ...received, [item.po_item_id]: Number(e.target.value) })
+                  setReceived({
+                    ...received,
+                    [item.po_item_id]: Number(e.target.value),
+                  })
                 }
                 className="w-20 px-2 py-1 border border-gray-300 rounded-md text-sm text-center focus:outline-none focus:ring-2"
               />
@@ -61,10 +82,12 @@ export default function DeliveryConfirmedModal({
           ))}
         </div>
 
+        <PhotoCapture onChange={setPhotos} />
+
         <button
           onClick={handleSubmit}
-          disabled={isLoading}
-          className="w-full py-3 bg-secondary text-white font-semibold rounded-md hover:opacity-90 transition-opacity disabled:opacity-60 disabled:cursor-not-allowed"
+          disabled={isLoading || photos.length === 0}
+          className="w-full py-3 mt-5 bg-secondary text-white font-semibold rounded-md hover:opacity-90 transition-opacity disabled:opacity-60 disabled:cursor-not-allowed"
         >
           {isLoading ? "Confirming..." : "Confirm Delivery"}
         </button>

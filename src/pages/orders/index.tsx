@@ -6,14 +6,18 @@ import { Dropdown } from "../../components/Dropdown";
 import type { PayOrder } from "../../types/typedefs";
 import toast from "react-hot-toast";
 import DeliveryConfirmedModal from "../../components/modals/DeliveryConfirmedModal";
-import { fetchLocations } from "../../lib/tanstack/locations"
+import { fetchLocations } from "../../lib/tanstack/locations";
 import { fetchOrders } from "../../lib/tanstack/orders";
 import { updateStatus } from "../../lib/tanstack/orders";
+import { ShippingModal } from "../../components/modals/ShippingConfirmModal";
+import { uploadPhotos } from "../../lib/tanstack/orders";
+import { StorageImage } from "../../components/StorageImage";
 
 export default function OrdersPage() {
   const [showModal, setShowModal] = useState<boolean>(false);
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [confirmOrder, setConfirmOrder] = useState<PayOrder | null>(null);
+  const [confirmShipping, setConfirmShipping] = useState<PayOrder | null>(null);
 
   const queryClient = useQueryClient();
   const { user } = useAuth();
@@ -24,19 +28,22 @@ export default function OrdersPage() {
       po_id,
       newStatus,
       receivedItems,
+      photoPaths,
     }: {
       po_id: string;
       newStatus: string;
       receivedItems?: { po_item_id: string; received_quantity: number }[];
-    }) => updateStatus(po_id, newStatus, receivedItems),
+      photoPaths?: string[];
+    }) => updateStatus(po_id, newStatus, receivedItems, photoPaths),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["orders", "recent"] });
       queryClient.invalidateQueries({ queryKey: ["orders"] });
       queryClient.invalidateQueries({ queryKey: ["locations"] });
       queryClient.invalidateQueries({ queryKey: ["activity"] });
-      queryClient.invalidateQueries({queryKey: ["stats"]});
+      queryClient.invalidateQueries({ queryKey: ["stats"] });
       toast.success("Status updated");
       setConfirmOrder(null);
+      setConfirmShipping(null);
     },
     onError: (err: Error) => {
       toast.error(err.message);
@@ -82,8 +89,7 @@ export default function OrdersPage() {
       return [
         {
           label: "Mark as Shipped",
-          action: () =>
-            updateOrder.mutate({ po_id: order.po_id, newStatus: "shipped" }),
+          action: () => setConfirmShipping(order),
         },
       ];
     }
@@ -212,6 +218,16 @@ export default function OrdersPage() {
                   </div>
                 )}
 
+                {order.order_photos?.length > 0 && (
+                  <div className="flex gap-2 mt-3">
+                    {order.order_photos.map((photo, i) => (
+                      <div key={i} className="w-16 h-16 shrink-0">
+                        <StorageImage storagePath={photo.storage_path} />
+                      </div>
+                    ))}
+                  </div>
+                )}
+
                 {order.notes && (
                   <p className="text-xs text-gray-400 mt-2 italic">
                     {order.notes}
@@ -249,11 +265,37 @@ export default function OrdersPage() {
           order={confirmOrder}
           onClose={() => setConfirmOrder(null)}
           isLoading={updateOrder.isPending}
-          onConfirm={(receivedItems) => {
+          onConfirm={async (receivedItems, files) => {
+            const paths = await uploadPhotos(
+              confirmOrder.po_id,
+              files,
+              "order_delivered",
+            );
             updateOrder.mutate({
               po_id: confirmOrder.po_id,
               newStatus: "delivered",
               receivedItems,
+              photoPaths: paths,
+            });
+          }}
+        />
+      )}
+
+      {confirmShipping && (
+        <ShippingModal
+          order={confirmShipping}
+          onClose={() => setConfirmShipping(null)}
+          isLoading={updateOrder.isPending}
+          onConfirm={async (files) => {
+            const paths = await uploadPhotos(
+              confirmShipping.po_id,
+              files,
+              "order_shipped",
+            );
+            updateOrder.mutate({
+              po_id: confirmShipping.po_id,
+              newStatus: "shipped",
+              photoPaths: paths,
             });
           }}
         />

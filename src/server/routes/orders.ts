@@ -4,7 +4,8 @@ import { Resend } from "resend";
 import { logActivity } from "../helper/logActivity";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
-const router = Router();3
+const router = Router();
+3;
 
 router.get("/", async (req, res) => {
   const limit = req.query.limit
@@ -15,7 +16,7 @@ router.get("/", async (req, res) => {
     let query = dbClient
       .from("pay_orders")
       .select(
-        `*, pay_order_item(*, material_item(*)), signer:profiles!pay_orders_signed_fkey(name)`,
+        `*, pay_order_item(*, material_item(*)), signer:profiles!pay_orders_signed_fkey(name), order_photos(storage_path, event_context)`,
       )
       .order("created_at", { ascending: false });
 
@@ -30,8 +31,15 @@ router.get("/", async (req, res) => {
 });
 
 router.post("/create", async (req, res) => {
-  const { vendor, po_number, source_location_id, destination_location_id, notes, items, expectedDelivery } =
-    req.body;
+  const {
+    vendor,
+    po_number,
+    source_location_id,
+    destination_location_id,
+    notes,
+    items,
+    expectedDelivery,
+  } = req.body;
   const created_by = req.user!.user_id;
 
   if (req.user!.role !== "project_manager") {
@@ -49,7 +57,7 @@ router.post("/create", async (req, res) => {
       destination_location_id,
       notes,
       created_by,
-      expected_delivery: expectedDelivery
+      expected_delivery: expectedDelivery,
     })
     .select()
     .single();
@@ -89,7 +97,7 @@ router.post("/create", async (req, res) => {
 });
 
 router.patch("/:id", async (req, res) => {
-  const { newStatus } = req.body;
+  const { newStatus, photoPaths } = req.body;
   const po_id = req.params.id;
   const user = req.user!.user_id;
 
@@ -166,6 +174,19 @@ router.patch("/:id", async (req, res) => {
     } catch (err: any) {
       return res.status(400).json({ error: err.message });
     }
+
+    if (photoPaths?.length) {
+      const { error: photoError } = await dbClient.from("order_photos").insert(
+        photoPaths.map((path: string) => ({
+          po_id,
+          event_context: "order_shipped",
+          storage_path: path,
+          uploaded_by: user,
+        })),
+      );
+      if (photoError) throw new Error(photoError.message);
+    }
+
     await logActivity(user, "order_shipped", po_id, order.po_number);
   }
 
@@ -232,6 +253,19 @@ router.patch("/:id", async (req, res) => {
         .update({ has_missing_items: true })
         .eq("po_id", po_id);
     }
+
+    if (photoPaths?.length) {
+      const { error: photoError } = await dbClient.from("order_photos").insert(
+        photoPaths.map((path: string) => ({
+          po_id,
+          event_context: "order_delivered",
+          storage_path: path,
+          uploaded_by: user,
+        })),
+      );
+      if (photoError) throw new Error(photoError.message);
+    }
+
     await logActivity(user, "order_delivered", po_id, order.po_number);
   }
 
