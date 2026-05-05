@@ -114,7 +114,13 @@ router.patch("/:id", async (req, res) => {
   // update the status
   const { error: updateError } = await dbClient
     .from("pay_orders")
-    .update({ status: newStatus })
+    .update({
+      status: newStatus,
+      ...(newStatus === "shipped" && { shipped_at: new Date().toISOString() }),
+      ...(newStatus === "delivered" && {
+        delivered_at: new Date().toISOString(),
+      }),
+    })
     .eq("po_id", po_id);
 
   if (updateError) return res.status(500).json({ error: updateError.message });

@@ -10,21 +10,25 @@ import { IncomingOrders } from "./components/IncomingOrders";
 import { InventorySnapshot } from "./components/InventorySnapshot";
 import { ActivityFeed } from "../manager/components/ActivityFeed";
 
-
 export function JobsiteDashboard() {
   const { user } = useAuth();
   const [homeJobsiteId, setHomeJobsiteId] = useState<string | null>(
     user?.[0]?.home_jobsite_id ?? null,
   );
 
-  const { data: orders } = useQuery({ queryKey: ["orders"], queryFn: fetchOrders });
+  const { data: orders } = useQuery({
+    queryKey: ["orders"],
+    queryFn: fetchOrders,
+  });
   const { data: locations } = useQuery({
     queryKey: ["locations"],
     queryFn: fetchLocations,
   });
 
   if (!homeJobsiteId) {
-    return <JobsitePicker locations={locations ?? []} onSave={setHomeJobsiteId} />;
+    return (
+      <JobsitePicker locations={locations ?? []} onSave={setHomeJobsiteId} />
+    );
   }
 
   const homeLocation = locations?.find((l) => l.location_id === homeJobsiteId);
@@ -38,10 +42,24 @@ export function JobsiteDashboard() {
     ) ?? [];
 
   const today = new Date().toISOString().split("T")[0];
+  console.log("today:", today);
+  console.log(
+    "expected_delivery values:",
+    orders?.map((o) => o.expected_delivery),
+  );
+  console.log("homeJobsiteId:", homeJobsiteId);
+  console.log(
+    "orders today:",
+    orders
+      ?.filter((o) => o.expected_delivery?.startsWith(today))
+      .map((o) => o.destination_location_id),
+  );
+
   const expectedToday =
     orders?.filter(
       (o) =>
-        o.destination_location_id === homeJobsiteId && o.expected_delivery === today,
+        o.destination_location_id === homeJobsiteId &&
+        o.expected_delivery?.startsWith(today),
     ).length ?? 0;
 
   const thisMonth = new Date().toISOString().slice(0, 7);

@@ -7,7 +7,7 @@ type Props = {
 };
 
 const statusStyle: Record<string, string> = {
-  shipped: "bg-orange-100 text-orange-800",
+  shipped: "bg-purple-100 text-purple-800",
   created: "bg-yellow-100 text-yellow-800",
 };
 
@@ -35,16 +35,23 @@ export function IncomingOrders({ orders, locations }: Props) {
               className="bg-white rounded-lg shadow p-4 border-l-4 border-l-primary"
             >
               <div className="flex items-center justify-between mb-1">
-                <span className="font-bold text-primary">{order.po_number}</span>
+                <span className="font-bold text-primary">
+                  {order.po_number}
+                </span>
                 <span
                   className={`text-xs font-semibold px-2 py-1 rounded-full ${statusStyle[order.status] ?? ""}`}
                 >
                   {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
                 </span>
               </div>
-              <p className="text-sm text-gray-500 mb-2">
-                From: {getLocationName(order.source_location_id)}
-              </p>
+              {order.source_location_id && (
+                <p className="text-sm text-gray-500 mb-2">
+                  From: {getLocationName(order.source_location_id)}
+                </p>
+              )}
+             <p className="text-sm text-gray-500 mb-2">
+                  To: {getLocationName(order.destination_location_id)}
+                </p>
               <div className="text-sm text-gray-700 space-y-1">
                 {order.pay_order_item.map((item, i) => (
                   <p key={i}>
