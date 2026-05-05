@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { supabase } from "../lib/supabase/supabaseClient";
 
 type Props = {
@@ -6,17 +7,19 @@ type Props = {
 };
 
 export function StorageImage({ storagePath }: Props) {
-  const [url, setUrl] = useState<string | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
-  useEffect(() => {
-    supabase.storage
-      .from("photos")
-      .createSignedUrl(storagePath, 3600)
-      .then(({ data, error }) => {
-        if (!error && data) setUrl(data.signedUrl);
-      });
-  }, [storagePath]);
+  const { data: url } = useQuery({
+    queryKey: ["storage", storagePath],
+    queryFn: async () => {
+      const { data, error } = await supabase.storage
+        .from("photos")
+        .createSignedUrl(storagePath, 3600);
+      if (error) throw new Error(error.message);
+      return data.signedUrl;
+    },
+    staleTime: 55 * 60 * 1000,
+  });
 
   if (!url) return <div className="w-full aspect-square bg-gray-100 rounded-md" />;
 
@@ -36,4 +39,7 @@ export function StorageImage({ storagePath }: Props) {
       )}
     </>
   );
+
+    
+
 }
