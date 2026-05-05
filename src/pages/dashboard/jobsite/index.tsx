@@ -8,6 +8,7 @@ import { JobsiteHeader } from "./components/JobsiteHeader";
 import { JobsiteStats } from "./components/JobsiteStats";
 import { IncomingOrders } from "./components/IncomingOrders";
 import { InventorySnapshot } from "./components/InventorySnapshot";
+import { ActivityFeed } from "../manager/components/ActivityFeed";
 
 export function JobsiteDashboard() {
   const { user } = useAuth();
@@ -76,6 +77,7 @@ export function JobsiteDashboard() {
         locationName={homeLocation?.location_name ?? ""}
         address={homeLocation?.address ?? null}
       />
+      <ActivityFeed />
     </div>
   );
 }
