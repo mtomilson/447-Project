@@ -5,15 +5,16 @@ type AuthContextType = {
   token: string | null;
   login: (email: string, password: string) => Promise<any>;
   logout: () => void;
+  updateUser: (updatedFields: Record<string, any>) => void;
 };
 
 const AuthContext = createContext<AuthContextType | null>(null); //auth context allows all children to use the data from this file
-                                                                 // important for authentication purposes
+// important for authentication purposes
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState(() => {
     const stored = localStorage.getItem("user"); // stores user in the browser's local storage
-    return stored ? JSON.parse(stored) : null;   // if user exists parse it, if not return null ( no user )
+    return stored ? JSON.parse(stored) : null; // if user exists parse it, if not return null ( no user )
   });
   const [token, setToken] = useState<string | null>(() => {
     const stored = localStorage.getItem("token");
@@ -21,14 +22,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   });
 
   async function login(email: string, password: string) {
-    const res = await fetch(`${import.meta.env.VITE_API_URL}/api/login`, { // calls api and returns token and user data
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/api/login`, {
+      // calls api and returns token and user data
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),
     });
     const data = await res.json();
     if (!res.ok) {
-      throw new Error(data.error)
+      throw new Error(data.error);
     } else {
       setUser(data.user);
       setToken(data.token);
@@ -44,9 +46,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
   }
+  function updateUser(updatedFields: Partial<(typeof user)[0]>) {
+    const updated = [{ ...user[0], ...updatedFields }];
+    setUser(updated);
+    localStorage.setItem("user", JSON.stringify(updated));
+  }
 
   return (
-    <AuthContext.Provider value={{ user, token, login, logout }}>
+    <AuthContext.Provider value={{ user, token, login, logout, updateUser }}>
       {children}
     </AuthContext.Provider>
   );

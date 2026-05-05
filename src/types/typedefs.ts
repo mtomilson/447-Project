@@ -64,6 +64,8 @@ export type PayOrder = {
     storage_path: string;
     event_context: string;
   }[];
+  shipped_at: string | null;
+  delivered_at: string | null;
 };
 
 export type EventType = 'order_created' | 'order_shipped' | 'order_delivered';

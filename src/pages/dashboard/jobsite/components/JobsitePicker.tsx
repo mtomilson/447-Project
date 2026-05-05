@@ -1,6 +1,7 @@
 import { useState } from "react";
 import type { Location } from "../../../../types/typedefs";
 import { Dropdown } from "../../../../components/Dropdown";
+import { useAuth } from "../../../../context/AuthContext";
 
 type Props = {
   locations: Location[];
@@ -10,6 +11,7 @@ type Props = {
 export function JobsitePicker({ locations, onSave }: Props) {
   const [selected, setSelected] = useState("");
   const [saving, setSaving] = useState(false);
+  const { updateUser } = useAuth();
 
   async function handleSave() {
     if (!selected) return;
@@ -23,12 +25,7 @@ export function JobsitePicker({ locations, onSave }: Props) {
       },
       body: JSON.stringify({ home_jobsite_id: selected }),
     });
-    const stored = localStorage.getItem("user");
-    if (stored) {
-      const u = JSON.parse(stored);
-      if (Array.isArray(u) && u[0]) u[0].home_jobsite_id = selected;
-      localStorage.setItem("user", JSON.stringify(u));
-    }
+    updateUser({ home_jobsite_id: selected });
     setSaving(false);
     onSave(selected);
   }

@@ -57,8 +57,11 @@ export function WarehouseDashboard() {
       );
     }, 0) ?? 0;
 
+  const today = new Date().toDateString();
   const shippedToday =
-    orders?.filter((o) => o.status === "shipped").length ?? 0;
+    orders?.filter(
+      (o) => o.shipped_at && new Date(o.shipped_at).toDateString() === today,
+    ).length ?? 0;
 
   function getLocationName(id: string | null) {
     if (!id) return "-";
@@ -156,20 +159,68 @@ export function WarehouseDashboard() {
           )}
         </div>
 
-        {/* Recent Deliveries */}
+        {/* Warehouse Inventory */}
         <div className="mb-8">
           <div className="flex items-center justify-between mb-3">
             <h2 className="text-lg font-bold text-primary">
-              Recent Deliveries
+              Warehouse Inventory
             </h2>
             <Link
-              to="/orders"
+              to="/inventory"
               className="text-sm text-secondary hover:underline"
             >
               View all
             </Link>
           </div>
-          <div className="text-sm text-gray-400">No deliveries logged yet.</div>
+          {(() => {
+            const warehouse = locations?.find(
+              (l) => l.location_name === "Main Warehouse",
+            );
+            if (!warehouse)
+              return (
+                <p className="text-gray-400 text-sm">Warehouse not found.</p>
+              );
+            return (
+              <div className="overflow-x-auto rounded-lg border border-gray-200">
+                <table className="w-full text-sm text-left table-fixed">
+                  <thead className="bg-gray-50 text-gray-600 uppercase text-xs">
+                    <tr>
+                      <th className="px-4 py-3 w-1/2">Material</th>
+                      <th className="px-4 py-3 w-1/4">Quantity</th>
+                      <th className="px-4 py-3 w-1/4">Unit</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-100">
+                    {warehouse.location_item.length === 0 ? (
+                      <tr>
+                        <td
+                          colSpan={3}
+                          className="px-4 py-4 text-gray-400 text-center"
+                        >
+                          No items in stock.
+                        </td>
+                      </tr>
+                    ) : (
+                      warehouse.location_item.map((item) => (
+                        <tr
+                          key={item.item_id}
+                          className="bg-white hover:bg-gray-50"
+                        >
+                          <td className="px-4 py-3">
+                            {item.material_item.item_name}
+                          </td>
+                          <td className="px-4 py-3">{item.quantity ?? "—"}</td>
+                          <td className="px-4 py-3">
+                            {item.material_item.unit ?? "—"}
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            );
+          })()}
         </div>
       </div>
     </div>
