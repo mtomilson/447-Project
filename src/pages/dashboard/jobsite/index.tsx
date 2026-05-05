@@ -41,7 +41,20 @@ export function JobsiteDashboard() {
           (o.status === "created" && o.source_location_id === null)),
     ) ?? [];
 
-  const today = new Date().toISOString().split("T")[0];
+  const today = new Date().toLocaleDateString("en-CA");
+  console.log("homeJobsiteId:", JSON.stringify(homeJobsiteId));
+  console.log("today:", today);
+  orders?.forEach((o) => {
+    if (o.destination_location_id === homeJobsiteId) {
+      console.log(
+        "match:",
+        o.po_number,
+        "expected_delivery:",
+        JSON.stringify(o.expected_delivery),
+      );
+    }
+  });
+
   const expectedToday =
     orders?.filter(
       (o) =>
