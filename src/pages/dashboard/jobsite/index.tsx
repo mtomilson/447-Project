@@ -13,9 +13,18 @@ import { ActivityFeed } from "../manager/components/ActivityFeed";
 
 export function JobsiteDashboard() {
   const { user } = useAuth();
-  const [homeJobsiteId, setHomeJobsiteId] = useState<string | null>(
-    user?.[0]?.home_jobsite_id ?? null,
-  );
+  const [homeJobsiteId, setHomeJobsiteId] = useState<string | null>(() => {
+    const stored = localStorage.getItem("user");
+    if (stored) {
+      try {
+        const u = JSON.parse(stored);
+        return u?.[0]?.home_jobsite_id ?? null;
+      } catch {
+        return null;
+      }
+    }
+    return null;
+  });
 
   const { data: orders } = useQuery({ queryKey: ["orders"], queryFn: fetchOrders });
   const { data: locations } = useQuery({
