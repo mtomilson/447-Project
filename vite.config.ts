@@ -8,4 +8,11 @@ export default defineConfig({
     react(),
     tailwindcss(),
   ],
+  server: {
+    host: true,
+    allowedHosts: ["dole-spirits-sleep.ngrok-free.dev"],
+    proxy: {
+      '/api': 'http://localhost:3000'
+    }
+  },
 })  
