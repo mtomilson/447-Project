@@ -156,20 +156,43 @@ export function WarehouseDashboard() {
           )}
         </div>
 
-        {/* Recent Deliveries */}
+        {/* Warehouse Inventory */}
         <div className="mb-8">
           <div className="flex items-center justify-between mb-3">
-            <h2 className="text-lg font-bold text-primary">
-              Recent Deliveries
-            </h2>
-            <Link
-              to="/orders"
-              className="text-sm text-secondary hover:underline"
-            >
+            <h2 className="text-lg font-bold text-primary">Warehouse Inventory</h2>
+            <Link to="/inventory" className="text-sm text-secondary hover:underline">
               View all
             </Link>
           </div>
-          <div className="text-sm text-gray-400">No deliveries logged yet.</div>
+          {locations?.filter((l) => l.location_name?.toLowerCase().includes("warehouse")).map((loc) => (
+            <div key={loc.location_id} className="mb-4">
+              <p className="text-sm font-medium text-secondary mb-2">{loc.location_name}</p>
+              {loc.location_item?.length === 0 ? (
+                <p className="text-gray-400 text-sm">No inventory at this location.</p>
+              ) : (
+                <div className="bg-white rounded-lg shadow overflow-hidden">
+                  <table className="w-full text-sm">
+                    <thead className="bg-gray-50 text-xs uppercase text-gray-500">
+                      <tr>
+                        <th className="text-left px-4 py-3">Material</th>
+                        <th className="text-left px-4 py-3">Qty</th>
+                        <th className="text-left px-4 py-3">Unit</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-100">
+                      {loc.location_item?.map((item) => (
+                        <tr key={item.item_id}>
+                          <td className="px-4 py-3 text-gray-800">{item.material_item.item_name}</td>
+                          <td className="px-4 py-3 text-gray-700">{item.quantity ?? 0}</td>
+                          <td className="px-4 py-3 text-gray-500">{item.material_item.unit ?? "—"}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+          ))}
         </div>
       </div>
     </div>

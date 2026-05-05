@@ -42,7 +42,9 @@ export function JobsitePicker({ locations, onSave }: Props) {
         </p>
         <div className="mb-4">
           <Dropdown
-            options={locations.map((l) => ({ value: l.location_id, label: l.location_name ?? "" }))}
+            options={locations
+              .filter((l) => !l.location_name?.toLowerCase().includes("warehouse"))
+              .map((l) => ({ value: l.location_id, label: l.location_name ?? "" }))}
             value={selected}
             onChange={setSelected}
             placeholder="-- Choose a jobsite --"
