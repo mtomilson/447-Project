@@ -1,27 +1,81 @@
-import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { useAuth } from "../../../context/AuthContext";
+import { fetchOrders } from "../../../lib/tanstack/orders";
+import { fetchLocations } from "../../../lib/tanstack/locations";
+import { JobsitePicker } from "./components/JobsitePicker";
+import { JobsiteHeader } from "./components/JobsiteHeader";
+import { JobsiteStats } from "./components/JobsiteStats";
+import { IncomingOrders } from "./components/IncomingOrders";
+import { InventorySnapshot } from "./components/InventorySnapshot";
 
 export function JobsiteDashboard() {
-  const navigate = useNavigate();
-  
+  const { user } = useAuth();
+  const [homeJobsiteId, setHomeJobsiteId] = useState<string | null>(
+    user?.[0]?.home_jobsite_id ?? null,
+  );
+
+  const { data: orders } = useQuery({ queryKey: ["orders"], queryFn: fetchOrders });
+  const { data: locations } = useQuery({
+    queryKey: ["locations"],
+    queryFn: fetchLocations,
+  });
+
+  if (!homeJobsiteId) {
+    return <JobsitePicker locations={locations ?? []} onSave={setHomeJobsiteId} />;
+  }
+
+  const homeLocation = locations?.find((l) => l.location_id === homeJobsiteId);
+
+  const incomingOrders =
+    orders?.filter(
+      (o) =>
+        o.destination_location_id === homeJobsiteId &&
+        (o.status === "shipped" ||
+          (o.status === "created" && o.source_location_id === null)),
+    ) ?? [];
+
+  const today = new Date().toISOString().split("T")[0];
+  const expectedToday =
+    orders?.filter(
+      (o) =>
+        o.destination_location_id === homeJobsiteId && o.expected_delivery === today,
+    ).length ?? 0;
+
+  const thisMonth = new Date().toISOString().slice(0, 7);
+  const deliveredThisMonth =
+    orders?.filter(
+      (o) =>
+        o.destination_location_id === homeJobsiteId &&
+        o.status === "delivered" &&
+        o.created_at.startsWith(thisMonth),
+    ).length ?? 0;
+
+  const totalItems =
+    homeLocation?.location_item?.reduce(
+      (acc, item) => acc + (item.quantity ?? 0),
+      0,
+    ) ?? 0;
+
   return (
     <div className="min-h-screen bg-gray-50 p-6">
-      <h1 className="text-2xl font-bold mb-6" style={{ color: "#013868" }}>
-        Jobsite Dashboard
-      </h1>
-      <div className="grid gap-4">
-        <button
-          onClick={() => navigate("/dashboard/jobsite/requests")}
-          className="bg-white rounded-lg shadow p-6 text-left hover:shadow-md transition-shadow border-l-4"
-          style={{ borderLeftColor: "#7AC142" }}
-        >
-          <h2 className="text-lg font-semibold" style={{ color: "#013868" }}>
-            Material Requests
-          </h2>
-          <p className="text-gray-500 text-sm mt-1">
-            View and submit material requests
-          </p>
-        </button>
-      </div>
+      <JobsiteHeader
+        locationName={homeLocation?.location_name ?? ""}
+        userName={user?.[0]?.name ?? ""}
+        onChangeJobsite={() => setHomeJobsiteId(null)}
+      />
+      <JobsiteStats
+        incomingOrders={incomingOrders.length}
+        expectedToday={expectedToday}
+        deliveredThisMonth={deliveredThisMonth}
+        totalItems={totalItems}
+      />
+      <IncomingOrders orders={incomingOrders} locations={locations ?? []} />
+      <InventorySnapshot
+        items={homeLocation?.location_item ?? []}
+        locationName={homeLocation?.location_name ?? ""}
+        address={homeLocation?.address ?? null}
+      />
     </div>
   );
 }
