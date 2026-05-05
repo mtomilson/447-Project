@@ -12,6 +12,7 @@ import materialRouter from "./routes/material";
 import ordersRouter from "./routes/orders";
 import activityRouter from "./routes/activity";
 import statsRouter from "./routes/stats";
+import profileRouter from "./routes/profile";
 
 import { authenticate } from "../middleware/authenticate";
 
@@ -37,6 +38,7 @@ app.use("/api/material", authenticate, materialRouter);
 app.use("/api/orders", authenticate, ordersRouter);
 app.use("/api/activity", authenticate, activityRouter);
 app.use("/api/stats", authenticate, statsRouter);
+app.use("/api/profile", authenticate, profileRouter);
 
 const PORT = process.env.PORT;
 
