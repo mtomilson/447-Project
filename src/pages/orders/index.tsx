@@ -134,7 +134,10 @@ export default function OrdersPage() {
             { value: "delivered", label: "Delivered" },
           ]}
           value={statusFilter}
-          onChange={(v) => { setStatusFilter(v); setPage(1); }}
+          onChange={(v) => {
+            setStatusFilter(v);
+            setPage(1);
+          }}
           placeholder="Filter by status"
         />
       </div>
@@ -248,11 +251,23 @@ export default function OrdersPage() {
                     </button>
                   ))}
                 </div>
+                {order.expected_delivery && (
+                  <p className="text-xs text-gray-400 mt-2">
+                    ETA:{" "}
+                    {new Date(order.expected_delivery).toLocaleDateString()}
+                  </p>
+                )}
 
                 {order.signed && (
                   <div className="flex items-center gap-1 mt-3 text-xs text-green-700 bg-green-50 border border-green-200 rounded-md px-3 py-1.5 w-fit">
                     <span>✓ Marked as Delivered by</span>
                     <span className="font-semibold">{order.signer?.name}</span>
+                    <span>
+                      on{" "}
+                      {order.delivered_at
+                        ? new Date(order.delivered_at).toLocaleDateString()
+                        : "—"}
+                    </span>
                   </div>
                 )}
 
@@ -265,9 +280,10 @@ export default function OrdersPage() {
       )}
 
       {(() => {
-        const filtered = orders?.filter(
-          (order) => statusFilter === "all" || order.status === statusFilter,
-        ) ?? [];
+        const filtered =
+          orders?.filter(
+            (order) => statusFilter === "all" || order.status === statusFilter,
+          ) ?? [];
         const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
         if (totalPages <= 1) return null;
         return (

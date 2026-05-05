@@ -49,9 +49,9 @@ export function IncomingOrders({ orders, locations }: Props) {
                   From: {getLocationName(order.source_location_id)}
                 </p>
               )}
-             <p className="text-sm text-gray-500 mb-2">
-                  To: {getLocationName(order.destination_location_id)}
-                </p>
+              <p className="text-sm text-gray-500 mb-2">
+                To: {getLocationName(order.destination_location_id)}
+              </p>
               <div className="text-sm text-gray-700 space-y-1">
                 {order.pay_order_item.map((item, i) => (
                   <p key={i}>
@@ -62,7 +62,12 @@ export function IncomingOrders({ orders, locations }: Props) {
               </div>
               {order.expected_delivery && (
                 <p className="text-xs text-gray-400 mt-2">
-                  ETA: {order.expected_delivery}
+                  ETA:{" "}
+                  {order.expected_delivery
+                    ? new Date(
+                        order.expected_delivery + "T00:00:00",
+                      ).toLocaleDateString()
+                    : "—"}
                 </p>
               )}
             </div>
