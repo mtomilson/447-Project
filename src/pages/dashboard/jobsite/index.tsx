@@ -42,19 +42,6 @@ export function JobsiteDashboard() {
     ) ?? [];
 
   const today = new Date().toISOString().split("T")[0];
-  console.log("today:", today);
-  console.log(
-    "expected_delivery values:",
-    orders?.map((o) => o.expected_delivery),
-  );
-  console.log("homeJobsiteId:", homeJobsiteId);
-  console.log(
-    "orders today:",
-    orders
-      ?.filter((o) => o.expected_delivery?.startsWith(today))
-      .map((o) => o.destination_location_id),
-  );
-
   const expectedToday =
     orders?.filter(
       (o) =>
