@@ -1,8 +1,11 @@
 import type { ActivityLog } from "../../types/typedefs";
 
-export async function fetchActivityLog(): Promise<ActivityLog[]> {
+export async function fetchActivityLog(limit?: number): Promise<ActivityLog[]> {
   const token = localStorage.getItem("token");
-  const res = await fetch(`${import.meta.env.VITE_API_URL}/api/activity`, {
+  const url = limit
+    ? `${import.meta.env.VITE_API_URL}/api/activity?limit=${limit}`
+    : `${import.meta.env.VITE_API_URL}/api/activity`;
+  const res = await fetch(url, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
