@@ -70,7 +70,7 @@ export function Navbar() {
       </nav>
 
       {/* Mobile — bottom bar */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 flex justify-around py-4 z-50">
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 flex justify-around pt-3 pb-[max(env(safe-area-inset-bottom),0.75rem)] z-50">
         {links.map((link) => (
           <NavLink
             key={link.path}

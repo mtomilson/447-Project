@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type { Location } from "../../types/typedefs";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Dropdown } from "../Dropdown";
@@ -55,6 +55,11 @@ export default function AddPayOrderModal({
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [formError, setFormError] = useState("");
   const queryClient = useQueryClient();
+
+  useEffect(() => {
+    document.body.style.overflow = "hidden";
+    return () => { document.body.style.overflow = ""; };
+  }, []);
 
   const addOrder = useMutation({
     mutationFn: createPayOrder,
@@ -128,7 +133,7 @@ export default function AddPayOrderModal({
 
   return (
     <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 px-4">
-      <div className="bg-white rounded-lg shadow-lg w-full max-w-sm p-8 max-h-[90vh] overflow-y-auto">
+      <div className="bg-white rounded-lg shadow-lg w-full max-w-sm p-6 max-h-[85dvh] overflow-y-auto overscroll-contain">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-bold text-primary">New Pay Order</h2>
           <button
@@ -207,8 +212,7 @@ export default function AddPayOrderModal({
               type="date"
               value={expectedDelivery}
               onChange={(e) => setExepectedDelivery(e.target.value)}
-              placeholder="Select Expected Delivery Date"
-              className="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2"
+              className="w-full px-3 py-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 appearance-none"
             />
           </div>
 
