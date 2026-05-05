@@ -10,6 +10,7 @@ import { IncomingOrders } from "./components/IncomingOrders";
 import { InventorySnapshot } from "./components/InventorySnapshot";
 import { ActivityFeed } from "../manager/components/ActivityFeed";
 
+
 export function JobsiteDashboard() {
   const { user } = useAuth();
   const [homeJobsiteId, setHomeJobsiteId] = useState<string | null>(
