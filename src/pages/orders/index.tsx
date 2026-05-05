@@ -18,6 +18,8 @@ export default function OrdersPage() {
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [confirmOrder, setConfirmOrder] = useState<PayOrder | null>(null);
   const [confirmShipping, setConfirmShipping] = useState<PayOrder | null>(null);
+  const [page, setPage] = useState(1);
+  const PAGE_SIZE = 10;
 
   const queryClient = useQueryClient();
   const { user } = useAuth();
@@ -132,7 +134,7 @@ export default function OrdersPage() {
             { value: "delivered", label: "Delivered" },
           ]}
           value={statusFilter}
-          onChange={setStatusFilter}
+          onChange={(v) => { setStatusFilter(v); setPage(1); }}
           placeholder="Filter by status"
         />
       </div>
@@ -148,6 +150,7 @@ export default function OrdersPage() {
               (order) =>
                 statusFilter === "all" || order.status === statusFilter,
             )
+            ?.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE)
             ?.map((order) => (
               <div
                 key={order.po_id}
@@ -260,6 +263,36 @@ export default function OrdersPage() {
             ))}
         </div>
       )}
+
+      {(() => {
+        const filtered = orders?.filter(
+          (order) => statusFilter === "all" || order.status === statusFilter,
+        ) ?? [];
+        const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
+        if (totalPages <= 1) return null;
+        return (
+          <div className="flex items-center justify-between mt-6">
+            <button
+              onClick={() => setPage((p) => p - 1)}
+              disabled={page === 1}
+              className="px-4 py-2 text-sm font-medium bg-white border border-gray-300 rounded-md disabled:opacity-40 hover:bg-gray-50"
+            >
+              Previous
+            </button>
+            <span className="text-sm text-gray-500">
+              Page {page} of {totalPages}
+            </span>
+            <button
+              onClick={() => setPage((p) => p + 1)}
+              disabled={page === totalPages}
+              className="px-4 py-2 text-sm font-medium bg-white border border-gray-300 rounded-md disabled:opacity-40 hover:bg-gray-50"
+            >
+              Next
+            </button>
+          </div>
+        );
+      })()}
+
       {confirmOrder && (
         <DeliveryConfirmedModal
           order={confirmOrder}
