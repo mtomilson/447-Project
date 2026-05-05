@@ -21,7 +21,7 @@ export function ActivityFeed() {
         <p className="text-gray-400 text-sm">No recent activity.</p>
       ) : (
         <div className="space-y-3">
-          {data.map((log) => (
+          {data.slice(0, 3).map((log) => (
             <div key={log.log_id} className="bg-white rounded-lg shadow p-4 flex items-start gap-3">
               <span className="mt-1 w-2 h-2 rounded-full bg-secondary shrink-0" />
               <div>
